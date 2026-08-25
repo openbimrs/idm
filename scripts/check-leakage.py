@@ -19,6 +19,8 @@ XSD_MARKERS = (
     b"<schema " + b'xmlns="http://www.w3.org/2001/XMLSchema"',
 )
 PDF_MARKERS = (b"%PDF-",)
+DERIVED_ROOTS = {".git", ".venv", "node_modules", "target"}
+DERIVED_PATHS = {("docs", ".vitepress", "cache"), ("docs", ".vitepress", "dist")}
 
 
 def fail(message: str) -> None:
@@ -83,11 +85,15 @@ def source_candidates() -> list[str]:
         return [line for line in result.stdout.splitlines() if line]
     if (ROOT / ".git").exists():
         fail(f"could not enumerate Git source files: {result.stderr.strip()}")
-    return sorted(
-        item.relative_to(ROOT).as_posix()
-        for item in ROOT.rglob("*")
-        if item.is_file() and ".git" not in item.relative_to(ROOT).parts
-    )
+    candidates = []
+    for item in ROOT.rglob("*"):
+        relative = item.relative_to(ROOT)
+        if not item.is_file() or relative.parts[0] in DERIVED_ROOTS:
+            continue
+        if any(relative.parts[: len(path)] == path for path in DERIVED_PATHS):
+            continue
+        candidates.append(relative.as_posix())
+    return sorted(candidates)
 
 
 if len(sys.argv) == 1:

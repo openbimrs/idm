@@ -37,7 +37,18 @@ cp "$ROOT/openbim-idm/Cargo.toml" "$TEMP/openbim-idm/Cargo.toml"
 REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null
 
 mkdir -p "$PUBLIC_SOURCE"
-git -C "$ROOT" archive HEAD | tar -x -C "$PUBLIC_SOURCE"
+if git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git -C "$ROOT" archive HEAD | tar -x -C "$PUBLIC_SOURCE"
+else
+  tar -C "$ROOT" \
+    --exclude='./.git' \
+    --exclude='./.venv' \
+    --exclude='./node_modules' \
+    --exclude='./target' \
+    --exclude='./docs/.vitepress/cache' \
+    --exclude='./docs/.vitepress/dist' \
+    -cf - . | tar -x -C "$PUBLIC_SOURCE"
+fi
 REPO_ROOT="$PUBLIC_SOURCE" python3 "$ROOT/scripts/check-leakage.py" >/dev/null
 printf '%s%s xmlns:xs="http://www.w3.org/2001/XMLSchema"/>\n' '<xs:' 'schema' > "$LEAKAGE_MUTATION"
 if REPO_ROOT="$PUBLIC_SOURCE" python3 "$ROOT/scripts/check-leakage.py" >/dev/null 2>&1; then
