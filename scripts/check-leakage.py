@@ -75,11 +75,19 @@ def source_candidates() -> list[str]:
     result = subprocess.run(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
         cwd=ROOT,
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
     )
-    return [line for line in result.stdout.splitlines() if line]
+    if result.returncode == 0:
+        return [line for line in result.stdout.splitlines() if line]
+    if (ROOT / ".git").exists():
+        fail(f"could not enumerate Git source files: {result.stderr.strip()}")
+    return sorted(
+        item.relative_to(ROOT).as_posix()
+        for item in ROOT.rglob("*")
+        if item.is_file() and ".git" not in item.relative_to(ROOT).parts
+    )
 
 
 if len(sys.argv) == 1:
