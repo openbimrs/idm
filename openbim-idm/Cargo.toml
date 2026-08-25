@@ -1,11 +1,11 @@
 [package]
 name = "openbim-idm"
-version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
-license.workspace = true
-authors.workspace = true
-repository.workspace = true
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+authors = ["openbimrs contributors"]
+repository = "https://github.com/openbimrs/idm"
 readme = "README.md"
 description = "Lossless ISO 29481-3 idmXML reader, writer, editor, CLI, and Python engine"
 keywords = ["bim", "idm", "iso-29481", "xml"]

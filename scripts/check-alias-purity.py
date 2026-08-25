@@ -30,6 +30,16 @@ alias_manifest = read_toml(ALIAS / "Cargo.toml")
 pyproject = read_toml(ROOT / "pyproject.toml")
 version = root_manifest["workspace"]["package"]["version"]
 
+workspace_package = root_manifest["workspace"]["package"]
+for label, manifest in (("canonical", canonical_manifest), ("alias", alias_manifest)):
+    package = manifest["package"]
+    for key in ("version", "edition", "rust-version", "license", "authors", "repository"):
+        if package.get(key) != workspace_package.get(key):
+            fail(
+                f"{label} package must declare explicit {key} metadata matching the "
+                "standalone workspace; workspace inheritance breaks when pinned in a superproject"
+            )
+
 if canonical_manifest["package"].get("publish") is not False:
     fail("canonical crate must set publish = false")
 if alias_manifest["package"].get("publish") is not False:

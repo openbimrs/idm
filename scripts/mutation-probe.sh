@@ -18,6 +18,22 @@ if REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null 2>
 fi
 cp "$SOURCE" "$TEMP/idmxml/src/lib.rs"
 REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null
+
+python3 - "$TEMP/openbim-idm/Cargo.toml" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+source = path.read_text()
+path.write_text(source.replace('repository = "https://github.com/openbimrs/idm"', 'repository.workspace = true', 1))
+PY
+if REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null 2>&1; then
+  echo "mutation-probe: FAIL (superproject-breaking workspace metadata was not detected)" >&2
+  exit 1
+fi
+cp "$ROOT/openbim-idm/Cargo.toml" "$TEMP/openbim-idm/Cargo.toml"
+REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null
+
 AFTER="$(sha256sum "$SOURCE" | cut -d' ' -f1)"
 [[ "$BEFORE" == "$AFTER" ]] || { echo "mutation-probe: FAIL (working source changed)" >&2; exit 1; }
 echo "mutation-probe: PASS (clean -> mutated failure -> restored clean; source hash unchanged)"
