@@ -16,5 +16,8 @@ include = ["src/lib.rs", "Cargo.toml", "README.md"]
 [dependencies]
 openbim-idm = { path = "../openbim-idm", version = "=0.1.0", default-features = false }
 
-[lints]
-workspace = true
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }

@@ -39,6 +39,11 @@ for label, manifest in (("canonical", canonical_manifest), ("alias", alias_manif
                 f"{label} package must declare explicit {key} metadata matching the "
                 "standalone workspace; workspace inheritance breaks when pinned in a superproject"
             )
+    if manifest.get("lints") != root_manifest["workspace"]["lints"]:
+        fail(
+            f"{label} package must declare explicit lint settings matching the standalone "
+            "workspace; workspace lint inheritance breaks when pinned in a superproject"
+        )
 
 if canonical_manifest["package"].get("publish") is not False:
     fail("canonical crate must set publish = false")

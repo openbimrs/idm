@@ -40,5 +40,8 @@ uuid = { version = "1", features = ["v4"] }
 pretty_assertions = "1"
 tempfile = "3"
 
-[lints]
-workspace = true
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
