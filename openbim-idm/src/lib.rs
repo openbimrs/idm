@@ -9,7 +9,7 @@
 
 use quick_xml::XmlVersion;
 use quick_xml::escape::unescape;
-use quick_xml::events::{BytesCData, BytesDecl, BytesPI, BytesStart, BytesText, Event};
+use quick_xml::events::{BytesCData, BytesDecl, BytesPI, BytesRef, BytesStart, BytesText, Event};
 use quick_xml::name::ResolveResult;
 use quick_xml::reader::NsReader;
 use quick_xml::writer::Writer;
@@ -83,6 +83,8 @@ pub struct Attribute {
 pub enum Node {
     Element(Element),
     Text(String),
+    /// Lexical content between `&` and `;` for a predefined or numeric XML reference.
+    GeneralReference(String),
     CData(String),
     Comment(String),
     ProcessingInstruction(String),
@@ -436,22 +438,28 @@ impl Document {
     pub fn text(&self, path: &str) -> Result<String> {
         let element = resolve(&self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
-        Ok(element
-            .children
-            .iter()
-            .filter_map(|node| match node {
-                Node::Text(value) | Node::CData(value) => Some(value.as_str()),
-                _ => None,
-            })
-            .collect())
+        let mut text = String::new();
+        for node in &element.children {
+            match node {
+                Node::Text(value) | Node::CData(value) => text.push_str(value),
+                Node::GeneralReference(reference) => {
+                    text.push(resolve_general_reference(reference)?)
+                }
+                _ => {}
+            }
+        }
+        Ok(text)
     }
 
     pub fn set_text(&mut self, path: &str, value: &str) -> Result<()> {
         let element = resolve_mut(&mut self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
-        element
-            .children
-            .retain(|node| !matches!(node, Node::Text(_) | Node::CData(_)));
+        element.children.retain(|node| {
+            !matches!(
+                node,
+                Node::Text(_) | Node::GeneralReference(_) | Node::CData(_)
+            )
+        });
         element.children.insert(0, Node::Text(value.into()));
         Ok(())
     }
@@ -926,6 +934,20 @@ fn parse_xml(xml: &str) -> Result<(Vec<Node>, Element, Vec<Node>)> {
                     return Err(Error::Xml("text outside the root element".into()));
                 }
             }
+            Event::GeneralRef(reference) => {
+                let reference = reference
+                    .decode()
+                    .map_err(|error| Error::Xml(error.to_string()))?
+                    .into_owned();
+                resolve_general_reference(&reference)?;
+                if let Some(parent) = stack.last_mut() {
+                    parent.children.push(Node::GeneralReference(reference));
+                } else {
+                    return Err(Error::Xml(
+                        "entity reference outside the root element".into(),
+                    ));
+                }
+            }
             Event::CData(cdata) => {
                 if let Some(parent) = stack.last_mut() {
                     parent.children.push(Node::CData(
@@ -957,7 +979,6 @@ fn parse_xml(xml: &str) -> Result<(Vec<Node>, Element, Vec<Node>)> {
                 ));
             }
             Event::Eof => break,
-            _ => {}
         }
     }
     if !stack.is_empty() {
@@ -1074,6 +1095,12 @@ fn write_element(writer: &mut Writer<Vec<u8>>, element: &Element) -> Result<()> 
             Node::Text(value) => writer
                 .write_event(Event::Text(BytesText::new(value)))
                 .map_err(write_error)?,
+            Node::GeneralReference(reference) => {
+                resolve_general_reference(reference)?;
+                writer
+                    .write_event(Event::GeneralRef(BytesRef::new(reference)))
+                    .map_err(write_error)?;
+            }
             Node::CData(value) => writer
                 .write_event(Event::CData(BytesCData::new(value)))
                 .map_err(write_error)?,
@@ -1099,10 +1126,47 @@ fn write_document_level_node(writer: &mut Writer<Vec<u8>>, node: &Node) -> Resul
         Node::ProcessingInstruction(value) => writer
             .write_event(Event::PI(BytesPI::new(value)))
             .map_err(write_error),
-        Node::Element(_) | Node::Text(_) | Node::CData(_) => Err(Error::Write(
-            "only comments and processing instructions are valid outside the root element".into(),
-        )),
+        Node::Element(_) | Node::Text(_) | Node::GeneralReference(_) | Node::CData(_) => {
+            Err(Error::Write(
+                "only comments and processing instructions are valid outside the root element"
+                    .into(),
+            ))
+        }
     }
+}
+
+fn resolve_general_reference(reference: &str) -> Result<char> {
+    let character = match reference {
+        "amp" => '&',
+        "lt" => '<',
+        "gt" => '>',
+        "apos" => '\'',
+        "quot" => '"',
+        decimal if decimal.starts_with('#') && !decimal.starts_with("#x") => decimal[1..]
+            .parse::<u32>()
+            .ok()
+            .and_then(char::from_u32)
+            .filter(|character| is_xml_1_0_character(*character))
+            .ok_or_else(|| Error::Xml(format!("invalid character reference `&{reference};`")))?,
+        hexadecimal if hexadecimal.starts_with("#x") => u32::from_str_radix(&hexadecimal[2..], 16)
+            .ok()
+            .and_then(char::from_u32)
+            .filter(|character| is_xml_1_0_character(*character))
+            .ok_or_else(|| Error::Xml(format!("invalid character reference `&{reference};`")))?,
+        _ => {
+            return Err(Error::Xml(format!(
+                "undefined general entity reference `&{reference};`; DTD-defined entities are disabled"
+            )));
+        }
+    };
+    Ok(character)
+}
+
+fn is_xml_1_0_character(character: char) -> bool {
+    matches!(
+        character as u32,
+        0x9 | 0xA | 0xD | 0x20..=0xD7FF | 0xE000..=0xFFFD | 0x10000..=0x10FFFF
+    )
 }
 
 fn write_error(error: std::io::Error) -> Error {

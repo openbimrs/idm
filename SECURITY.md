@@ -11,7 +11,7 @@ Use GitHub's private vulnerability reporting for `openbimrs/idm` when available.
 ## Security posture
 
 - XML input is bounded to 64 MiB by default and nesting to 1,024 levels.
-- `DOCTYPE` declarations and entity-based input are rejected by the Rust parser.
+- `DOCTYPE` declarations and DTD-defined entity references are rejected by the Rust parser; predefined and valid numeric character references are preserved without external expansion.
 - Python XSD parsing disables network, DTD loading, and entity resolution.
 - XSD includes are restricted to the known six filenames in one explicit local directory.
 - Unknown XML extensions are preserved and reported, not executed.

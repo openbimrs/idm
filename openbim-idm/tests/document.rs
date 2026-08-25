@@ -187,6 +187,30 @@ fn enumerates_element_paths_and_reorders_same_name_schema_siblings() {
 }
 
 #[test]
+fn preserves_predefined_and_numeric_character_references() {
+    let source = "<idm>a&amp;b&lt;&gt;&apos;&quot;&#65;&#x41;</idm>";
+    let document = Document::parse(source).expect("valid XML references parse");
+
+    assert_eq!(document.text("/idm").unwrap(), "a&b<>'\"AA");
+    assert_eq!(
+        document.to_xml(false).unwrap(),
+        format!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>{source}")
+    );
+}
+
+#[test]
+fn rejects_undefined_and_invalid_general_entity_references() {
+    for source in [
+        "<idm>&undefined;</idm>",
+        "<idm>&#0;</idm>",
+        "<idm>&#xD800;</idm>",
+        "<idm>&#x110000;</idm>",
+    ] {
+        assert!(Document::parse(source).is_err(), "accepted {source}");
+    }
+}
+
+#[test]
 fn rejects_malformed_oversized_doctype_and_excessively_deep_xml() {
     assert!(Document::parse("<broken>").is_err());
     assert!(Document::parse("<!DOCTYPE idm><idm/>").is_err());

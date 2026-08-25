@@ -24,7 +24,7 @@ The six Annex B XSD files and all DIN/ISO PDFs are deliberately absent. Put lawf
 
 | Capability | Rust library / `idmxml` CLI | Python / `idmpy` | Notes |
 |---|---:|---:|---|
-| Lossless XML tree round trips | Yes | Yes | Preserves namespaces, unknown elements/attributes, ordering, comments, CDATA, and processing instructions |
+| Lossless XML tree round trips | Yes | Yes | Preserves namespaces, unknown elements/attributes, ordering, predefined/numeric references, comments, CDATA, and processing instructions |
 | Recursive IDM structures | Yes | Yes | Catalog-aware create, move, remove, and cardinality checks |
 | Structural/semantic validation | Yes | Yes | Generated content model plus documented ISO-over-XSD overlays |
 | Formal XSD validation | No | Yes, optional | Requires `lxml` and an explicit six-file schema directory/root path; offline and entity-safe |
