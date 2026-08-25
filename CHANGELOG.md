@@ -22,6 +22,6 @@ All notable changes to this project are documented here. The format follows [Kee
 
 - Preserve predefined and numeric XML character references during lossless round trips, and reject undefined or invalid references instead of silently dropping them.
 - Scan every public source payload—not only filenames and the generated catalog—for renamed or embedded XSD/PDF standards content, with a mutation-verified leakage probe.
-- Keep that leakage gate operational in exported source trees that intentionally omit `.git` metadata.
+- Keep the complete repository gate operational in exported source trees that intentionally omit `.git` metadata.
 
 [Unreleased]: https://github.com/openbimrs/idm/commits/main
