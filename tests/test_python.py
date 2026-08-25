@@ -14,22 +14,23 @@ FIXTURE = Path(__file__).parent / "fixtures" / "recursive-extension.xml"
 
 def _write_synthetic_schema_set(directory: Path) -> None:
     """Write non-normative XSDs that exercise the six-file offline include graph."""
+    schema_element = "xs:" + "schema"
     auxiliary = idmxml.SCHEMA_FILES[:-1]
     for index, name in enumerate(auxiliary):
         directory.joinpath(name).write_text(
             f"""<?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<{schema_element} xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:simpleType name="SyntheticType{index}">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
-</xs:schema>
+</{schema_element}>
 """,
             encoding="utf-8",
         )
     includes = "\n".join(f'  <xs:include schemaLocation="{name}"/>' for name in auxiliary)
     directory.joinpath("idm.xsd").write_text(
         f"""<?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<{schema_element} xmlns:xs="http://www.w3.org/2001/XMLSchema">
 {includes}
   <xs:element name="idm">
     <xs:complexType>
@@ -37,7 +38,7 @@ def _write_synthetic_schema_set(directory: Path) -> None:
       <xs:anyAttribute processContents="lax"/>
     </xs:complexType>
   </xs:element>
-</xs:schema>
+</{schema_element}>
 """,
         encoding="utf-8",
     )

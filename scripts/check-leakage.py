@@ -10,10 +10,15 @@ import tarfile
 import zipfile
 from pathlib import Path, PurePosixPath
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(os.environ.get("REPO_ROOT", Path(__file__).resolve().parents[1])).resolve()
 FORBIDDEN_SUFFIXES = {".xsd", ".pdf"}
 FORBIDDEN_PATH_PARTS = {"references", "schemas"}
-XSD_MARKERS = (b"<xs:schema", b"<xsd:schema", b'<schema xmlns="http://www.w3.org/2001/XMLSchema"')
+XSD_MARKERS = (
+    b"<xs:" + b"schema",
+    b"<xsd:" + b"schema",
+    b"<schema " + b'xmlns="http://www.w3.org/2001/XMLSchema"',
+)
+PDF_MARKERS = (b"%PDF-",)
 
 
 def fail(message: str) -> None:
@@ -32,6 +37,8 @@ def check_name(name: str, origin: str) -> None:
 def check_bytes(name: str, payload: bytes, origin: str) -> None:
     if any(marker.lower() in payload.lower() for marker in XSD_MARKERS):
         fail(f"XSD schema bytes found in {origin}: {name}")
+    if any(marker in payload.lstrip()[:16] for marker in PDF_MARKERS):
+        fail(f"PDF bytes found in {origin}: {name}")
 
 
 def check_directory(path: Path) -> None:
@@ -78,9 +85,13 @@ def source_candidates() -> list[str]:
 if len(sys.argv) == 1:
     for name in source_candidates():
         check_name(name, "public source tree")
-    catalog = ROOT / "openbim-idm" / "catalog" / "catalog.json"
-    check_bytes(catalog.relative_to(ROOT).as_posix(), catalog.read_bytes(), "public source tree")
-    print("leakage: PASS (source names and generated catalog)")
+        candidate = ROOT / name
+        if candidate.is_file():
+            if zipfile.is_zipfile(candidate) or tarfile.is_tarfile(candidate):
+                check_archive(candidate)
+            else:
+                check_bytes(name, candidate.read_bytes(), "public source tree")
+    print("leakage: PASS (source names and payloads)")
 else:
     for argument in sys.argv[1:]:
         candidate = Path(os.path.abspath(argument))

@@ -20,6 +20,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Fixed
 
-- Preserve predefined and numeric XML character references lexically, reject undefined general entities, and prevent valid reference content from being silently dropped.
+- Preserve predefined and numeric XML character references during lossless round trips, and reject undefined or invalid references instead of silently dropping them.
+- Scan every public source payload—not only filenames and the generated catalog—for renamed or embedded XSD/PDF standards content, with a mutation-verified leakage probe.
 
 [Unreleased]: https://github.com/openbimrs/idm/commits/main
