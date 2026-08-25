@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?idm-editor keep-me?>
+<idm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:vendor="urn:example:idm-vendor"
+     xsi:noNamespaceSchemaLocation="idm.xsd">
+  <!-- preserve this comment -->
+  <specId guid="11111111-1111-4111-8111-111111111111" fullTitle="Coordination" idmCode="IDM-001" documentStatus="draft"/>
+  <authoring copyright="">
+    <changeLog id="CL-1" changeDateTime="2026-08-05T12:00:00Z" changeSummary="Created" changedBy="author-1"/>
+    <author id="author-1" firstName="Ada" lastName="Lovelace"/>
+  </authoring>
+  <uc>
+    <specId guid="22222222-2222-4222-8222-222222222222" fullTitle="Coordinate design" idmCode="UC-001" documentStatus="draft"/>
+    <authoring copyright="">
+      <changeLog id="CL-UC" changeDateTime="2026-08-05T12:00:00Z" changeSummary="Created" changedBy="author-1"/>
+      <author id="author-1" firstName="Ada" lastName="Lovelace"/>
+    </authoring>
+    <summary odfFilfPath="odf/summary.fodt"/>
+    <aimAndScope odfFilfPath="odf/aim.fodt"/>
+    <language>en</language>
+    <use name="Coordinate design"/>
+    <standardProjectPhase><name>design</name></standardProjectPhase>
+    <subUc><uc>
+      <specId guid="33333333-3333-4333-8333-333333333333" fullTitle="Resolve interfaces" idmCode="UC-001-1" documentStatus="draft"/>
+      <authoring copyright=""><changeLog id="CL-SUC" changeDateTime="2026-08-05T12:00:00Z" changeSummary="Created" changedBy="author-1"/><author id="author-1" firstName="Ada" lastName="Lovelace"/></authoring>
+      <summary odfFilfPath="odf/sub-summary.fodt"/>
+      <aimAndScope odfFilfPath="odf/sub-aim.fodt"/>
+      <language>en</language>
+      <use name="Resolve interfaces"/>
+      <standardProjectPhase><name>design</name></standardProjectPhase>
+    </uc></subUc>
+  </uc>
+  <businessContextMap>
+    <specId guid="44444444-4444-4444-8444-444444444444" fullTitle="Coordination process" idmCode="BCM-001" documentStatus="draft"/>
+    <authoring copyright=""><changeLog id="CL-BCM" changeDateTime="2026-08-05T12:00:00Z" changeSummary="Created" changedBy="author-1"/><author id="author-1" firstName="Ada" lastName="Lovelace"/></authoring>
+    <pm><diagram id="D-1" name="Coordination" filePath="coordination.bpmn" notation="BPMN"/></pm>
+    <subBusinessContextMap><businessContextMap>
+      <specId guid="55555555-5555-4555-8555-555555555555" fullTitle="Sub process" idmCode="BCM-001-1" documentStatus="draft"/>
+      <authoring copyright=""><changeLog id="CL-SBCM" changeDateTime="2026-08-05T12:00:00Z" changeSummary="Created" changedBy="author-1"/><author id="author-1" firstName="Ada" lastName="Lovelace"/></authoring>
+      <pm><diagram id="D-2" name="Sub process" filePath="sub.bpmn" notation="BPMN"/></pm>
+    </businessContextMap></subBusinessContextMap>
+  </businessContextMap>
+  <er>
+    <specId guid="66666666-6666-4666-8666-666666666666" fullTitle="Coordination exchange" idmCode="ER-001" documentStatus="draft"/>
+    <authoring copyright=""><changeLog id="CL-ER" changeDateTime="2026-08-05T12:00:00Z" changeSummary="Created" changedBy="author-1"/><author id="author-1" firstName="Ada" lastName="Lovelace"/></authoring>
+    <informationUnit id="IU-1" name="Model" dataType="IfcProject" isMandatory="true" definition="Coordination model"/>
+    <subEr><er>
+      <specId guid="77777777-7777-4777-8777-777777777777" fullTitle="Interface exchange" idmCode="ER-001-1" documentStatus="draft"/>
+      <authoring copyright=""><changeLog id="CL-SER" changeDateTime="2026-08-05T12:00:00Z" changeSummary="Created" changedBy="author-1"/><author id="author-1" firstName="Ada" lastName="Lovelace"/></authoring>
+      <informationUnit id="IU-2" name="Interface" dataType="IfcElement" isMandatory="true" definition="Interface element"><subInformationUnit><informationUnit id="IU-2-1" name="Identifier" dataType="IfcIdentifier" isMandatory="true" definition="Stable identifier"/></subInformationUnit></informationUnit>
+    </er></subEr>
+  </er>
+  <vendor:Extension vendor:flag="kept"><![CDATA[future <content>]]></vendor:Extension>
+</idm>

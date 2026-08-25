@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SOURCE="$ROOT/idmxml/src/lib.rs"
+BEFORE="$(sha256sum "$SOURCE" | cut -d' ' -f1)"
+TEMP="$(mktemp -d)"
+trap 'rm -rf "$TEMP"' EXIT
+
+cp "$ROOT/Cargo.toml" "$ROOT/pyproject.toml" "$TEMP/"
+cp -a "$ROOT/openbim-idm" "$ROOT/idmxml" "$TEMP/"
+
+REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null
+printf '\npub struct IndependentAliasType;\n' >> "$TEMP/idmxml/src/lib.rs"
+if REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null 2>&1; then
+  echo "mutation-probe: FAIL (independent alias type was not detected)" >&2
+  exit 1
+fi
+cp "$SOURCE" "$TEMP/idmxml/src/lib.rs"
+REPO_ROOT="$TEMP" python3 "$ROOT/scripts/check-alias-purity.py" >/dev/null
+AFTER="$(sha256sum "$SOURCE" | cut -d' ' -f1)"
+[[ "$BEFORE" == "$AFTER" ]] || { echo "mutation-probe: FAIL (working source changed)" >&2; exit 1; }
+echo "mutation-probe: PASS (clean -> mutated failure -> restored clean; source hash unchanged)"

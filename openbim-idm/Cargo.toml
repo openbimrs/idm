@@ -1,0 +1,44 @@
+[package]
+name = "openbim-idm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme = "README.md"
+description = "Lossless ISO 29481-3 idmXML reader, writer, editor, CLI, and Python engine"
+keywords = ["bim", "idm", "iso-29481", "xml"]
+categories = ["parser-implementations", "data-structures", "command-line-utilities"]
+publish = false
+include = ["src/**", "catalog/catalog.json", "tests/**", "Cargo.toml", "README.md"]
+
+[lib]
+name = "openbim_idm"
+crate-type = ["rlib", "cdylib"]
+
+[[bin]]
+name = "idmxml"
+path = "src/main.rs"
+required-features = ["cli"]
+
+[features]
+default = ["cli"]
+cli = ["dep:clap"]
+python = ["dep:pyo3"]
+
+[dependencies]
+clap = { version = "4.6", features = ["derive"], optional = true }
+pyo3 = { version = "0.29", features = ["abi3-py39"], optional = true }
+quick-xml = "0.41"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+pretty_assertions = "1"
+tempfile = "3"
+
+[lints]
+workspace = true

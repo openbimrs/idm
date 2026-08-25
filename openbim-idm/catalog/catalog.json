@@ -1,0 +1,2645 @@
+{
+  "profile": "ISO 29481-3:2022 idmXML 0.2",
+  "root": "idm",
+  "namespace": null,
+  "schemas": [
+    {
+      "file": "specId.xsd",
+      "sha256": "b97d7182a6bdb9695635f2d47e95347691b54629ed232582b249f1079378a244"
+    },
+    {
+      "file": "authoring.xsd",
+      "sha256": "581a367ae9364243c92c7083271b583b8d196218a022e901d8afe2dbe810a28e"
+    },
+    {
+      "file": "uc.xsd",
+      "sha256": "409ea6823525a834cfe74ab10a8eda2b84ae4eed893c9653bcc650168ed25a68"
+    },
+    {
+      "file": "businessContextMap.xsd",
+      "sha256": "04eb8de7f2447656385f9b7402b18a5cfbb1ba6e7e755b756a5d394872287293"
+    },
+    {
+      "file": "er.xsd",
+      "sha256": "cf1e740552fcdbbc0f293cbad56e9087099540dc10687a5d12705998d2739cbb"
+    },
+    {
+      "file": "idm.xsd",
+      "sha256": "cc9b4b5e50f07f2614d2e20892d1cc00065f1cb20e8738ae0e2042db49714813"
+    }
+  ],
+  "element_names": [
+    "actor",
+    "aimAndScope",
+    "associatedDataObject",
+    "associatedEr",
+    "associatedMessage",
+    "author",
+    "authoring",
+    "benefitKeyword",
+    "benefits",
+    "businessContextMap",
+    "businessRule",
+    "change",
+    "changeLog",
+    "classification",
+    "committee",
+    "constraint",
+    "constructionEntity",
+    "correspondingExternalElement",
+    "correspondingMvd",
+    "dataObjectAndEr",
+    "description",
+    "diagram",
+    "er",
+    "examples",
+    "idm",
+    "im",
+    "informationRequirements",
+    "informationUnit",
+    "language",
+    "leader",
+    "limitations",
+    "localProjectPhase",
+    "member",
+    "messageAndEr",
+    "name",
+    "outcomes",
+    "pm",
+    "proposition",
+    "publisher",
+    "reference",
+    "region",
+    "requiredCompetencies",
+    "requiredResources",
+    "scopeKeyword",
+    "specId",
+    "standardProjectPhase",
+    "subBusinessContextMap",
+    "subEr",
+    "subIdm",
+    "subInformationUnit",
+    "subPm",
+    "subUc",
+    "summary",
+    "tm",
+    "uc",
+    "use",
+    "userDefinedProperty"
+  ],
+  "global_elements": [
+    "associatedEr",
+    "author",
+    "authoring",
+    "businessContextMap",
+    "classification",
+    "description",
+    "diagram",
+    "er",
+    "idm",
+    "im",
+    "informationRequirements",
+    "informationUnit",
+    "outcomes",
+    "pm",
+    "specId",
+    "tm",
+    "uc"
+  ],
+  "attribute_names": [
+    "affiliation",
+    "associatedBusinessRule",
+    "associatedInformationUnit",
+    "attribute-name",
+    "basis",
+    "basisStandard",
+    "changeDateTime",
+    "changeSummary",
+    "changedBy",
+    "changedElement",
+    "changedFrom",
+    "copyright",
+    "dataType",
+    "definition",
+    "digitalSignature",
+    "documentStatus",
+    "filePath",
+    "firstName",
+    "fullCitation",
+    "fullTitle",
+    "guid",
+    "id",
+    "idmCode",
+    "isMandatory",
+    "lastName",
+    "localCode",
+    "localDocumentStatus",
+    "location",
+    "middleName",
+    "name",
+    "notation",
+    "odfFilfPath",
+    "publicationDate",
+    "shortTitle",
+    "subTitle",
+    "type",
+    "value",
+    "version"
+  ],
+  "enum_values": [
+    "brief",
+    "demolition",
+    "design",
+    "inception",
+    "maintenance",
+    "production"
+  ],
+  "recursive_edges": [
+    {
+      "from": "businessContextMap",
+      "wrapper": "subBusinessContextMap",
+      "to": "businessContextMap"
+    },
+    {
+      "from": "er",
+      "wrapper": "subEr",
+      "to": "er"
+    },
+    {
+      "from": "idm",
+      "wrapper": "subIdm",
+      "to": "idm"
+    },
+    {
+      "from": "informationUnit",
+      "wrapper": "subInformationUnit",
+      "to": "informationUnit"
+    },
+    {
+      "from": "pm",
+      "wrapper": "subPm",
+      "to": "pm"
+    },
+    {
+      "from": "uc",
+      "wrapper": "subUc",
+      "to": "uc"
+    }
+  ],
+  "elements": {
+    "associatedEr": {
+      "handle": "associatedEr",
+      "name": "associatedEr",
+      "global": true,
+      "source_file": "er.xsd",
+      "source_line": 100,
+      "label_key": "schema.element.associatedEr",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "author": {
+      "handle": "author",
+      "name": "author",
+      "global": true,
+      "source_file": "authoring.xsd",
+      "source_line": 65,
+      "label_key": "schema.element.author",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "authoring.xsd",
+          "source_line": 67
+        },
+        {
+          "name": "digitalSignature",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.digitalSignature",
+          "source_file": "authoring.xsd",
+          "source_line": 68
+        },
+        {
+          "name": "firstName",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.firstName",
+          "source_file": "authoring.xsd",
+          "source_line": 69
+        },
+        {
+          "name": "middleName",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.middleName",
+          "source_file": "authoring.xsd",
+          "source_line": 70
+        },
+        {
+          "name": "lastName",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.lastName",
+          "source_file": "authoring.xsd",
+          "source_line": 71
+        },
+        {
+          "name": "affiliation",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.affiliation",
+          "source_file": "authoring.xsd",
+          "source_line": 72
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "authoring": {
+      "handle": "authoring",
+      "name": "authoring",
+      "global": true,
+      "source_file": "authoring.xsd",
+      "source_line": 3,
+      "label_key": "schema.element.authoring",
+      "attributes": [
+        {
+          "name": "copyright",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.copyright",
+          "source_file": "authoring.xsd",
+          "source_line": 41
+        }
+      ],
+      "children": [
+        {
+          "name": "changeLog",
+          "definition": "authoring/changeLog",
+          "min_occurs": 1,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.changeLog",
+          "source_file": "authoring.xsd",
+          "source_line": 6
+        },
+        {
+          "name": "author",
+          "definition": "author",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": "authoring.choice.0",
+          "recursive": false,
+          "label_key": "schema.element.author",
+          "source_file": "authoring.xsd",
+          "source_line": 23
+        },
+        {
+          "name": "committee",
+          "definition": "authoring/committee",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": "authoring.choice.0",
+          "recursive": false,
+          "label_key": "schema.element.committee",
+          "source_file": "authoring.xsd",
+          "source_line": 24
+        },
+        {
+          "name": "publisher",
+          "definition": "authoring/publisher",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.publisher",
+          "source_file": "authoring.xsd",
+          "source_line": 34
+        }
+      ],
+      "choice_groups": [
+        {
+          "handle": "authoring.choice.0",
+          "min_occurs": 1,
+          "max_occurs": null,
+          "children": [
+            "author",
+            "committee"
+          ]
+        }
+      ]
+    },
+    "authoring/changeLog": {
+      "handle": "authoring/changeLog",
+      "name": "changeLog",
+      "global": false,
+      "source_file": "authoring.xsd",
+      "source_line": 6,
+      "label_key": "schema.element.changeLog",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "authoring.xsd",
+          "source_line": 16
+        },
+        {
+          "name": "changeDateTime",
+          "required": true,
+          "default": null,
+          "data_type": "xs:dateTime",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.changeDateTime",
+          "source_file": "authoring.xsd",
+          "source_line": 17
+        },
+        {
+          "name": "changeSummary",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.changeSummary",
+          "source_file": "authoring.xsd",
+          "source_line": 18
+        },
+        {
+          "name": "changedBy",
+          "required": true,
+          "default": null,
+          "data_type": "xs:NCName",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.changedBy",
+          "source_file": "authoring.xsd",
+          "source_line": 19
+        }
+      ],
+      "children": [
+        {
+          "name": "change",
+          "definition": "authoring/changeLog/change",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.change",
+          "source_file": "authoring.xsd",
+          "source_line": 9
+        }
+      ],
+      "choice_groups": []
+    },
+    "authoring/changeLog/change": {
+      "handle": "authoring/changeLog/change",
+      "name": "change",
+      "global": false,
+      "source_file": "authoring.xsd",
+      "source_line": 9,
+      "label_key": "schema.element.change",
+      "attributes": [
+        {
+          "name": "changedElement",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.changedElement",
+          "source_file": "authoring.xsd",
+          "source_line": 11
+        },
+        {
+          "name": "changedFrom",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.changedFrom",
+          "source_file": "authoring.xsd",
+          "source_line": 12
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "authoring/committee": {
+      "handle": "authoring/committee",
+      "name": "committee",
+      "global": false,
+      "source_file": "authoring.xsd",
+      "source_line": 24,
+      "label_key": "schema.element.committee",
+      "attributes": [
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "authoring.xsd",
+          "source_line": 30
+        }
+      ],
+      "children": [
+        {
+          "name": "member",
+          "definition": "authoring/committee/member",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.member",
+          "source_file": "authoring.xsd",
+          "source_line": 27
+        },
+        {
+          "name": "leader",
+          "definition": "authoring/committee/leader",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.leader",
+          "source_file": "authoring.xsd",
+          "source_line": 28
+        }
+      ],
+      "choice_groups": []
+    },
+    "authoring/committee/member": {
+      "handle": "authoring/committee/member",
+      "name": "member",
+      "global": false,
+      "source_file": "authoring.xsd",
+      "source_line": 27,
+      "label_key": "schema.element.member",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "authoring/committee/leader": {
+      "handle": "authoring/committee/leader",
+      "name": "leader",
+      "global": false,
+      "source_file": "authoring.xsd",
+      "source_line": 28,
+      "label_key": "schema.element.leader",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "authoring/publisher": {
+      "handle": "authoring/publisher",
+      "name": "publisher",
+      "global": false,
+      "source_file": "authoring.xsd",
+      "source_line": 34,
+      "label_key": "schema.element.publisher",
+      "attributes": [
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "authoring.xsd",
+          "source_line": 36
+        },
+        {
+          "name": "location",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.location",
+          "source_file": "authoring.xsd",
+          "source_line": 37
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "businessContextMap": {
+      "handle": "businessContextMap",
+      "name": "businessContextMap",
+      "global": true,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 8,
+      "label_key": "schema.element.businessContextMap",
+      "attributes": [],
+      "children": [
+        {
+          "name": "specId",
+          "definition": "specId",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.specId",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 11
+        },
+        {
+          "name": "authoring",
+          "definition": "authoring",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.authoring",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 12
+        },
+        {
+          "name": "pm",
+          "definition": "pm",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": "businessContextMap.choice.1",
+          "recursive": false,
+          "label_key": "schema.element.pm",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 14
+        },
+        {
+          "name": "im",
+          "definition": "im",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": "businessContextMap.choice.1",
+          "recursive": false,
+          "label_key": "schema.element.im",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 15
+        },
+        {
+          "name": "subBusinessContextMap",
+          "definition": "businessContextMap/subBusinessContextMap",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": true,
+          "label_key": "schema.element.subBusinessContextMap",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 17
+        }
+      ],
+      "choice_groups": [
+        {
+          "handle": "businessContextMap.choice.1",
+          "min_occurs": 1,
+          "max_occurs": null,
+          "children": [
+            "pm",
+            "im"
+          ]
+        }
+      ]
+    },
+    "businessContextMap/subBusinessContextMap": {
+      "handle": "businessContextMap/subBusinessContextMap",
+      "name": "subBusinessContextMap",
+      "global": false,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 17,
+      "label_key": "schema.element.subBusinessContextMap",
+      "attributes": [],
+      "children": [
+        {
+          "name": "businessContextMap",
+          "definition": "businessContextMap",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.businessContextMap",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 20
+        }
+      ],
+      "choice_groups": []
+    },
+    "classification": {
+      "handle": "classification",
+      "name": "classification",
+      "global": true,
+      "source_file": "uc.xsd",
+      "source_line": 150,
+      "label_key": "schema.element.classification",
+      "attributes": [
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "uc.xsd",
+          "source_line": 152
+        },
+        {
+          "name": "version",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.version",
+          "source_file": "uc.xsd",
+          "source_line": 153
+        },
+        {
+          "name": "publicationDate",
+          "required": false,
+          "default": null,
+          "data_type": "xs:integer",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.publicationDate",
+          "source_file": "uc.xsd",
+          "source_line": 154
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "description": {
+      "handle": "description",
+      "name": "description",
+      "global": true,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 85,
+      "label_key": "schema.element.description",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 87
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "diagram": {
+      "handle": "diagram",
+      "name": "diagram",
+      "global": true,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 74,
+      "label_key": "schema.element.diagram",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 79
+        },
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 80
+        },
+        {
+          "name": "filePath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.filePath",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 81
+        },
+        {
+          "name": "notation",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.notation",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 82
+        }
+      ],
+      "children": [
+        {
+          "name": "description",
+          "definition": "description",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.description",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 77
+        }
+      ],
+      "choice_groups": []
+    },
+    "er": {
+      "handle": "er",
+      "name": "er",
+      "global": true,
+      "source_file": "er.xsd",
+      "source_line": 7,
+      "label_key": "schema.element.er",
+      "attributes": [],
+      "children": [
+        {
+          "name": "specId",
+          "definition": "specId",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.specId",
+          "source_file": "er.xsd",
+          "source_line": 10
+        },
+        {
+          "name": "authoring",
+          "definition": "authoring",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.authoring",
+          "source_file": "er.xsd",
+          "source_line": 11
+        },
+        {
+          "name": "informationUnit",
+          "definition": "informationUnit",
+          "min_occurs": 1,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.informationUnit",
+          "source_file": "er.xsd",
+          "source_line": 12
+        },
+        {
+          "name": "constraint",
+          "definition": "er/constraint",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.constraint",
+          "source_file": "er.xsd",
+          "source_line": 13
+        },
+        {
+          "name": "correspondingMvd",
+          "definition": "er/correspondingMvd",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.correspondingMvd",
+          "source_file": "er.xsd",
+          "source_line": 23
+        },
+        {
+          "name": "description",
+          "definition": "description",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.description",
+          "source_file": "er.xsd",
+          "source_line": 32
+        },
+        {
+          "name": "subEr",
+          "definition": "er/subEr",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": true,
+          "label_key": "schema.element.subEr",
+          "source_file": "er.xsd",
+          "source_line": 33
+        }
+      ],
+      "choice_groups": []
+    },
+    "er/constraint": {
+      "handle": "er/constraint",
+      "name": "constraint",
+      "global": false,
+      "source_file": "er.xsd",
+      "source_line": 13,
+      "label_key": "schema.element.constraint",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "er.xsd",
+          "source_line": 18
+        },
+        {
+          "name": "associatedInformationUnit",
+          "required": false,
+          "default": null,
+          "data_type": null,
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.associatedInformationUnit",
+          "source_file": "er.xsd",
+          "source_line": 19
+        },
+        {
+          "name": "associatedBusinessRule",
+          "required": false,
+          "default": null,
+          "data_type": null,
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.associatedBusinessRule",
+          "source_file": "er.xsd",
+          "source_line": 20
+        }
+      ],
+      "children": [
+        {
+          "name": "description",
+          "definition": "description",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.description",
+          "source_file": "er.xsd",
+          "source_line": 16
+        }
+      ],
+      "choice_groups": []
+    },
+    "er/correspondingMvd": {
+      "handle": "er/correspondingMvd",
+      "name": "correspondingMvd",
+      "global": false,
+      "source_file": "er.xsd",
+      "source_line": 23,
+      "label_key": "schema.element.correspondingMvd",
+      "attributes": [
+        {
+          "name": "basis",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.basis",
+          "source_file": "er.xsd",
+          "source_line": 28
+        },
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "er.xsd",
+          "source_line": 29
+        }
+      ],
+      "children": [
+        {
+          "name": "description",
+          "definition": "description",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.description",
+          "source_file": "er.xsd",
+          "source_line": 26
+        }
+      ],
+      "choice_groups": []
+    },
+    "er/subEr": {
+      "handle": "er/subEr",
+      "name": "subEr",
+      "global": false,
+      "source_file": "er.xsd",
+      "source_line": 33,
+      "label_key": "schema.element.subEr",
+      "attributes": [],
+      "children": [
+        {
+          "name": "er",
+          "definition": "er",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.er",
+          "source_file": "er.xsd",
+          "source_line": 36
+        }
+      ],
+      "choice_groups": []
+    },
+    "idm": {
+      "handle": "idm",
+      "name": "idm",
+      "global": true,
+      "source_file": "idm.xsd",
+      "source_line": 8,
+      "label_key": "schema.element.idm",
+      "attributes": [],
+      "children": [
+        {
+          "name": "specId",
+          "definition": "specId",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.specId",
+          "source_file": "idm.xsd",
+          "source_line": 11
+        },
+        {
+          "name": "authoring",
+          "definition": "authoring",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.authoring",
+          "source_file": "idm.xsd",
+          "source_line": 12
+        },
+        {
+          "name": "uc",
+          "definition": "uc",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.uc",
+          "source_file": "idm.xsd",
+          "source_line": 13
+        },
+        {
+          "name": "businessContextMap",
+          "definition": "businessContextMap",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.businessContextMap",
+          "source_file": "idm.xsd",
+          "source_line": 14
+        },
+        {
+          "name": "er",
+          "definition": "er",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.er",
+          "source_file": "idm.xsd",
+          "source_line": 15
+        },
+        {
+          "name": "subIdm",
+          "definition": "idm/subIdm",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": true,
+          "label_key": "schema.element.subIdm",
+          "source_file": "idm.xsd",
+          "source_line": 16
+        }
+      ],
+      "choice_groups": []
+    },
+    "idm/subIdm": {
+      "handle": "idm/subIdm",
+      "name": "subIdm",
+      "global": false,
+      "source_file": "idm.xsd",
+      "source_line": 16,
+      "label_key": "schema.element.subIdm",
+      "attributes": [],
+      "children": [
+        {
+          "name": "idm",
+          "definition": "idm",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.idm",
+          "source_file": "idm.xsd",
+          "source_line": 19
+        }
+      ],
+      "choice_groups": []
+    },
+    "im": {
+      "handle": "im",
+      "name": "im",
+      "global": true,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 50,
+      "label_key": "schema.element.im",
+      "attributes": [],
+      "children": [
+        {
+          "name": "diagram",
+          "definition": "diagram",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.diagram",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 53
+        },
+        {
+          "name": "tm",
+          "definition": "tm",
+          "min_occurs": 1,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.tm",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 54
+        }
+      ],
+      "choice_groups": []
+    },
+    "informationRequirements": {
+      "handle": "informationRequirements",
+      "name": "informationRequirements",
+      "global": true,
+      "source_file": "uc.xsd",
+      "source_line": 162,
+      "label_key": "schema.element.informationRequirements",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 167
+        }
+      ],
+      "children": [
+        {
+          "name": "associatedEr",
+          "definition": "associatedEr",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.associatedEr",
+          "source_file": "uc.xsd",
+          "source_line": 165
+        }
+      ],
+      "choice_groups": []
+    },
+    "informationUnit": {
+      "handle": "informationUnit",
+      "name": "informationUnit",
+      "global": true,
+      "source_file": "er.xsd",
+      "source_line": 68,
+      "label_key": "schema.element.informationUnit",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "er.xsd",
+          "source_line": 93
+        },
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "er.xsd",
+          "source_line": 94
+        },
+        {
+          "name": "dataType",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.dataType",
+          "source_file": "er.xsd",
+          "source_line": 95
+        },
+        {
+          "name": "isMandatory",
+          "required": true,
+          "default": null,
+          "data_type": "xs:boolean",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.isMandatory",
+          "source_file": "er.xsd",
+          "source_line": 96
+        },
+        {
+          "name": "definition",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.definition",
+          "source_file": "er.xsd",
+          "source_line": 97
+        }
+      ],
+      "children": [
+        {
+          "name": "examples",
+          "definition": "informationUnit/examples",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.examples",
+          "source_file": "er.xsd",
+          "source_line": 71
+        },
+        {
+          "name": "correspondingExternalElement",
+          "definition": "informationUnit/correspondingExternalElement",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.correspondingExternalElement",
+          "source_file": "er.xsd",
+          "source_line": 76
+        },
+        {
+          "name": "subInformationUnit",
+          "definition": "informationUnit/subInformationUnit",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": true,
+          "label_key": "schema.element.subInformationUnit",
+          "source_file": "er.xsd",
+          "source_line": 85
+        }
+      ],
+      "choice_groups": []
+    },
+    "informationUnit/examples": {
+      "handle": "informationUnit/examples",
+      "name": "examples",
+      "global": false,
+      "source_file": "er.xsd",
+      "source_line": 71,
+      "label_key": "schema.element.examples",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "er.xsd",
+          "source_line": 73
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "informationUnit/correspondingExternalElement": {
+      "handle": "informationUnit/correspondingExternalElement",
+      "name": "correspondingExternalElement",
+      "global": false,
+      "source_file": "er.xsd",
+      "source_line": 76,
+      "label_key": "schema.element.correspondingExternalElement",
+      "attributes": [
+        {
+          "name": "basis",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.basis",
+          "source_file": "er.xsd",
+          "source_line": 81
+        },
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "er.xsd",
+          "source_line": 82
+        }
+      ],
+      "children": [
+        {
+          "name": "description",
+          "definition": "description",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.description",
+          "source_file": "er.xsd",
+          "source_line": 79
+        }
+      ],
+      "choice_groups": []
+    },
+    "informationUnit/subInformationUnit": {
+      "handle": "informationUnit/subInformationUnit",
+      "name": "subInformationUnit",
+      "global": false,
+      "source_file": "er.xsd",
+      "source_line": 85,
+      "label_key": "schema.element.subInformationUnit",
+      "attributes": [],
+      "children": [
+        {
+          "name": "informationUnit",
+          "definition": "informationUnit",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.informationUnit",
+          "source_file": "er.xsd",
+          "source_line": 88
+        }
+      ],
+      "choice_groups": []
+    },
+    "outcomes": {
+      "handle": "outcomes",
+      "name": "outcomes",
+      "global": true,
+      "source_file": "uc.xsd",
+      "source_line": 157,
+      "label_key": "schema.element.outcomes",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 159
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "pm": {
+      "handle": "pm",
+      "name": "pm",
+      "global": true,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 27,
+      "label_key": "schema.element.pm",
+      "attributes": [],
+      "children": [
+        {
+          "name": "diagram",
+          "definition": "diagram",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.diagram",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 30
+        },
+        {
+          "name": "dataObjectAndEr",
+          "definition": "pm/dataObjectAndEr",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.dataObjectAndEr",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 31
+        },
+        {
+          "name": "subPm",
+          "definition": "pm/subPm",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": true,
+          "label_key": "schema.element.subPm",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 40
+        }
+      ],
+      "choice_groups": []
+    },
+    "pm/dataObjectAndEr": {
+      "handle": "pm/dataObjectAndEr",
+      "name": "dataObjectAndEr",
+      "global": false,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 31,
+      "label_key": "schema.element.dataObjectAndEr",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 37
+        }
+      ],
+      "children": [
+        {
+          "name": "associatedDataObject",
+          "definition": "pm/dataObjectAndEr/associatedDataObject",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.associatedDataObject",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 34
+        },
+        {
+          "name": "associatedEr",
+          "definition": "associatedEr",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.associatedEr",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 35
+        }
+      ],
+      "choice_groups": []
+    },
+    "pm/dataObjectAndEr/associatedDataObject": {
+      "handle": "pm/dataObjectAndEr/associatedDataObject",
+      "name": "associatedDataObject",
+      "global": false,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 34,
+      "label_key": "schema.element.associatedDataObject",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "pm/subPm": {
+      "handle": "pm/subPm",
+      "name": "subPm",
+      "global": false,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 40,
+      "label_key": "schema.element.subPm",
+      "attributes": [],
+      "children": [
+        {
+          "name": "pm",
+          "definition": "pm",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.pm",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 43
+        }
+      ],
+      "choice_groups": []
+    },
+    "specId": {
+      "handle": "specId",
+      "name": "specId",
+      "global": true,
+      "source_file": "specId.xsd",
+      "source_line": 3,
+      "label_key": "schema.element.specId",
+      "attributes": [
+        {
+          "name": "guid",
+          "required": true,
+          "default": null,
+          "data_type": "xs:normalizedString",
+          "pattern": "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}",
+          "enum_values": [],
+          "label_key": "schema.attribute.guid",
+          "source_file": "specId.xsd",
+          "source_line": 5
+        },
+        {
+          "name": "shortTitle",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.shortTitle",
+          "source_file": "specId.xsd",
+          "source_line": 6
+        },
+        {
+          "name": "fullTitle",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.fullTitle",
+          "source_file": "specId.xsd",
+          "source_line": 7
+        },
+        {
+          "name": "subTitle",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.subTitle",
+          "source_file": "specId.xsd",
+          "source_line": 8
+        },
+        {
+          "name": "idmCode",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.idmCode",
+          "source_file": "specId.xsd",
+          "source_line": 9
+        },
+        {
+          "name": "localCode",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.localCode",
+          "source_file": "specId.xsd",
+          "source_line": 10
+        },
+        {
+          "name": "documentStatus",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.documentStatus",
+          "source_file": "specId.xsd",
+          "source_line": 11
+        },
+        {
+          "name": "localDocumentStatus",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.localDocumentStatus",
+          "source_file": "specId.xsd",
+          "source_line": 12
+        },
+        {
+          "name": "version",
+          "required": false,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.version",
+          "source_file": "specId.xsd",
+          "source_line": 13
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "tm": {
+      "handle": "tm",
+      "name": "tm",
+      "global": true,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 58,
+      "label_key": "schema.element.tm",
+      "attributes": [],
+      "children": [
+        {
+          "name": "diagram",
+          "definition": "diagram",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.diagram",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 61
+        },
+        {
+          "name": "messageAndEr",
+          "definition": "tm/messageAndEr",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.messageAndEr",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 62
+        }
+      ],
+      "choice_groups": []
+    },
+    "tm/messageAndEr": {
+      "handle": "tm/messageAndEr",
+      "name": "messageAndEr",
+      "global": false,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 62,
+      "label_key": "schema.element.messageAndEr",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 68
+        }
+      ],
+      "children": [
+        {
+          "name": "associatedMessage",
+          "definition": "tm/messageAndEr/associatedMessage",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.associatedMessage",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 65
+        },
+        {
+          "name": "associatedEr",
+          "definition": "associatedEr",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.associatedEr",
+          "source_file": "businessContextMap.xsd",
+          "source_line": 66
+        }
+      ],
+      "choice_groups": []
+    },
+    "tm/messageAndEr/associatedMessage": {
+      "handle": "tm/messageAndEr/associatedMessage",
+      "name": "associatedMessage",
+      "global": false,
+      "source_file": "businessContextMap.xsd",
+      "source_line": 65,
+      "label_key": "schema.element.associatedMessage",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "uc": {
+      "handle": "uc",
+      "name": "uc",
+      "global": true,
+      "source_file": "uc.xsd",
+      "source_line": 7,
+      "label_key": "schema.element.uc",
+      "attributes": [],
+      "children": [
+        {
+          "name": "specId",
+          "definition": "specId",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.specId",
+          "source_file": "uc.xsd",
+          "source_line": 10
+        },
+        {
+          "name": "authoring",
+          "definition": "authoring",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.authoring",
+          "source_file": "uc.xsd",
+          "source_line": 11
+        },
+        {
+          "name": "summary",
+          "definition": "uc/summary",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.summary",
+          "source_file": "uc.xsd",
+          "source_line": 12
+        },
+        {
+          "name": "aimAndScope",
+          "definition": "uc/aimAndScope",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.aimAndScope",
+          "source_file": "uc.xsd",
+          "source_line": 17
+        },
+        {
+          "name": "language",
+          "definition": "uc/language",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.language",
+          "source_file": "uc.xsd",
+          "source_line": 22
+        },
+        {
+          "name": "use",
+          "definition": "uc/use",
+          "min_occurs": 1,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.use",
+          "source_file": "uc.xsd",
+          "source_line": 23
+        },
+        {
+          "name": "standardProjectPhase",
+          "definition": "uc/standardProjectPhase",
+          "min_occurs": 1,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.standardProjectPhase",
+          "source_file": "uc.xsd",
+          "source_line": 31
+        },
+        {
+          "name": "localProjectPhase",
+          "definition": "uc/localProjectPhase",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.localProjectPhase",
+          "source_file": "uc.xsd",
+          "source_line": 51
+        },
+        {
+          "name": "region",
+          "definition": "uc/region",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.region",
+          "source_file": "uc.xsd",
+          "source_line": 61
+        },
+        {
+          "name": "constructionEntity",
+          "definition": "uc/constructionEntity",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.constructionEntity",
+          "source_file": "uc.xsd",
+          "source_line": 67
+        },
+        {
+          "name": "businessRule",
+          "definition": "uc/businessRule",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.businessRule",
+          "source_file": "uc.xsd",
+          "source_line": 75
+        },
+        {
+          "name": "actor",
+          "definition": "uc/actor",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.actor",
+          "source_file": "uc.xsd",
+          "source_line": 89
+        },
+        {
+          "name": "benefits",
+          "definition": "uc/benefits",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.benefits",
+          "source_file": "uc.xsd",
+          "source_line": 98
+        },
+        {
+          "name": "limitations",
+          "definition": "uc/limitations",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.limitations",
+          "source_file": "uc.xsd",
+          "source_line": 103
+        },
+        {
+          "name": "requiredResources",
+          "definition": "uc/requiredResources",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.requiredResources",
+          "source_file": "uc.xsd",
+          "source_line": 108
+        },
+        {
+          "name": "requiredCompetencies",
+          "definition": "uc/requiredCompetencies",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.requiredCompetencies",
+          "source_file": "uc.xsd",
+          "source_line": 113
+        },
+        {
+          "name": "scopeKeyword",
+          "definition": "uc/scopeKeyword",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.scopeKeyword",
+          "source_file": "uc.xsd",
+          "source_line": 118
+        },
+        {
+          "name": "benefitKeyword",
+          "definition": "uc/benefitKeyword",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.benefitKeyword",
+          "source_file": "uc.xsd",
+          "source_line": 119
+        },
+        {
+          "name": "reference",
+          "definition": "uc/reference",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.reference",
+          "source_file": "uc.xsd",
+          "source_line": 120
+        },
+        {
+          "name": "userDefinedProperty",
+          "definition": "uc/userDefinedProperty",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.userDefinedProperty",
+          "source_file": "uc.xsd",
+          "source_line": 126
+        },
+        {
+          "name": "subUc",
+          "definition": "uc/subUc",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": true,
+          "label_key": "schema.element.subUc",
+          "source_file": "uc.xsd",
+          "source_line": 132
+        }
+      ],
+      "choice_groups": []
+    },
+    "uc/summary": {
+      "handle": "uc/summary",
+      "name": "summary",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 12,
+      "label_key": "schema.element.summary",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 14
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/aimAndScope": {
+      "handle": "uc/aimAndScope",
+      "name": "aimAndScope",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 17,
+      "label_key": "schema.element.aimAndScope",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 19
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/language": {
+      "handle": "uc/language",
+      "name": "language",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 22,
+      "label_key": "schema.element.language",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "uc/use": {
+      "handle": "uc/use",
+      "name": "use",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 23,
+      "label_key": "schema.element.use",
+      "attributes": [
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "uc.xsd",
+          "source_line": 28
+        }
+      ],
+      "children": [
+        {
+          "name": "classification",
+          "definition": "classification",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.classification",
+          "source_file": "uc.xsd",
+          "source_line": 26
+        }
+      ],
+      "choice_groups": []
+    },
+    "uc/standardProjectPhase": {
+      "handle": "uc/standardProjectPhase",
+      "name": "standardProjectPhase",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 31,
+      "label_key": "schema.element.standardProjectPhase",
+      "attributes": [],
+      "children": [
+        {
+          "name": "name",
+          "definition": "uc/standardProjectPhase/name",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.name",
+          "source_file": "uc.xsd",
+          "source_line": 34
+        },
+        {
+          "name": "outcomes",
+          "definition": "outcomes",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.outcomes",
+          "source_file": "uc.xsd",
+          "source_line": 46
+        },
+        {
+          "name": "informationRequirements",
+          "definition": "informationRequirements",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.informationRequirements",
+          "source_file": "uc.xsd",
+          "source_line": 47
+        }
+      ],
+      "choice_groups": []
+    },
+    "uc/standardProjectPhase/name": {
+      "handle": "uc/standardProjectPhase/name",
+      "name": "name",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 34,
+      "label_key": "schema.element.name",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": "xs:string",
+      "pattern": null,
+      "enum_values": [
+        "inception",
+        "brief",
+        "design",
+        "production",
+        "maintenance",
+        "demolition"
+      ]
+    },
+    "uc/localProjectPhase": {
+      "handle": "uc/localProjectPhase",
+      "name": "localProjectPhase",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 51,
+      "label_key": "schema.element.localProjectPhase",
+      "attributes": [],
+      "children": [
+        {
+          "name": "name",
+          "definition": "uc/localProjectPhase/name",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.name",
+          "source_file": "uc.xsd",
+          "source_line": 54
+        },
+        {
+          "name": "outcomes",
+          "definition": "outcomes",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.outcomes",
+          "source_file": "uc.xsd",
+          "source_line": 55
+        },
+        {
+          "name": "informationRequirements",
+          "definition": "informationRequirements",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.informationRequirements",
+          "source_file": "uc.xsd",
+          "source_line": 56
+        },
+        {
+          "name": "classification",
+          "definition": "classification",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.classification",
+          "source_file": "uc.xsd",
+          "source_line": 57
+        }
+      ],
+      "choice_groups": []
+    },
+    "uc/localProjectPhase/name": {
+      "handle": "uc/localProjectPhase/name",
+      "name": "name",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 54,
+      "label_key": "schema.element.name",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "uc/region": {
+      "handle": "uc/region",
+      "name": "region",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 61,
+      "label_key": "schema.element.region",
+      "attributes": [
+        {
+          "name": "type",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.type",
+          "source_file": "uc.xsd",
+          "source_line": 63
+        },
+        {
+          "name": "value",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.value",
+          "source_file": "uc.xsd",
+          "source_line": 64
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/constructionEntity": {
+      "handle": "uc/constructionEntity",
+      "name": "constructionEntity",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 67,
+      "label_key": "schema.element.constructionEntity",
+      "attributes": [
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "uc.xsd",
+          "source_line": 72
+        }
+      ],
+      "children": [
+        {
+          "name": "classification",
+          "definition": "classification",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.classification",
+          "source_file": "uc.xsd",
+          "source_line": 70
+        }
+      ],
+      "choice_groups": []
+    },
+    "uc/businessRule": {
+      "handle": "uc/businessRule",
+      "name": "businessRule",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 75,
+      "label_key": "schema.element.businessRule",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "uc.xsd",
+          "source_line": 85
+        },
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "uc.xsd",
+          "source_line": 86
+        }
+      ],
+      "children": [
+        {
+          "name": "proposition",
+          "definition": "uc/businessRule/proposition",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.proposition",
+          "source_file": "uc.xsd",
+          "source_line": 78
+        },
+        {
+          "name": "reference",
+          "definition": "uc/businessRule/reference",
+          "min_occurs": 0,
+          "max_occurs": null,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.reference",
+          "source_file": "uc.xsd",
+          "source_line": 83
+        }
+      ],
+      "choice_groups": []
+    },
+    "uc/businessRule/proposition": {
+      "handle": "uc/businessRule/proposition",
+      "name": "proposition",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 78,
+      "label_key": "schema.element.proposition",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 80
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/businessRule/reference": {
+      "handle": "uc/businessRule/reference",
+      "name": "reference",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 83,
+      "label_key": "schema.element.reference",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "uc/actor": {
+      "handle": "uc/actor",
+      "name": "actor",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 89,
+      "label_key": "schema.element.actor",
+      "attributes": [
+        {
+          "name": "id",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.id",
+          "source_file": "uc.xsd",
+          "source_line": 94
+        },
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "uc.xsd",
+          "source_line": 95
+        }
+      ],
+      "children": [
+        {
+          "name": "classification",
+          "definition": "classification",
+          "min_occurs": 0,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.classification",
+          "source_file": "uc.xsd",
+          "source_line": 92
+        }
+      ],
+      "choice_groups": []
+    },
+    "uc/benefits": {
+      "handle": "uc/benefits",
+      "name": "benefits",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 98,
+      "label_key": "schema.element.benefits",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 100
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/limitations": {
+      "handle": "uc/limitations",
+      "name": "limitations",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 103,
+      "label_key": "schema.element.limitations",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 105
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/requiredResources": {
+      "handle": "uc/requiredResources",
+      "name": "requiredResources",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 108,
+      "label_key": "schema.element.requiredResources",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 110
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/requiredCompetencies": {
+      "handle": "uc/requiredCompetencies",
+      "name": "requiredCompetencies",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 113,
+      "label_key": "schema.element.requiredCompetencies",
+      "attributes": [
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 115
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/scopeKeyword": {
+      "handle": "uc/scopeKeyword",
+      "name": "scopeKeyword",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 118,
+      "label_key": "schema.element.scopeKeyword",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "uc/benefitKeyword": {
+      "handle": "uc/benefitKeyword",
+      "name": "benefitKeyword",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 119,
+      "label_key": "schema.element.benefitKeyword",
+      "attributes": [],
+      "children": [],
+      "choice_groups": [],
+      "data_type": null,
+      "pattern": null,
+      "enum_values": []
+    },
+    "uc/reference": {
+      "handle": "uc/reference",
+      "name": "reference",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 120,
+      "label_key": "schema.element.reference",
+      "attributes": [
+        {
+          "name": "basisStandard",
+          "required": true,
+          "default": null,
+          "data_type": "xs:boolean",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.basisStandard",
+          "source_file": "uc.xsd",
+          "source_line": 122
+        },
+        {
+          "name": "fullCitation",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.fullCitation",
+          "source_file": "uc.xsd",
+          "source_line": 123
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/userDefinedProperty": {
+      "handle": "uc/userDefinedProperty",
+      "name": "userDefinedProperty",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 126,
+      "label_key": "schema.element.userDefinedProperty",
+      "attributes": [
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.name",
+          "source_file": "uc.xsd",
+          "source_line": 128
+        },
+        {
+          "name": "odfFilfPath",
+          "required": true,
+          "default": null,
+          "data_type": "xs:string",
+          "pattern": null,
+          "enum_values": [],
+          "label_key": "schema.attribute.odfFilfPath",
+          "source_file": "uc.xsd",
+          "source_line": 129
+        }
+      ],
+      "children": [],
+      "choice_groups": []
+    },
+    "uc/subUc": {
+      "handle": "uc/subUc",
+      "name": "subUc",
+      "global": false,
+      "source_file": "uc.xsd",
+      "source_line": 132,
+      "label_key": "schema.element.subUc",
+      "attributes": [],
+      "children": [
+        {
+          "name": "uc",
+          "definition": "uc",
+          "min_occurs": 1,
+          "max_occurs": 1,
+          "choice_group": null,
+          "recursive": false,
+          "label_key": "schema.element.uc",
+          "source_file": "uc.xsd",
+          "source_line": 135
+        }
+      ],
+      "choice_groups": []
+    }
+  },
+  "semantic_overlays": [
+    {
+      "code": "idm.er.required_by_standard",
+      "path": "/idm",
+      "child": "er",
+      "min_occurs": 1,
+      "source": "DIN EN ISO 29481-3:2024-09, Clause 5, p. 15",
+      "reason": "The normative prose requires one ER although idm.xsd declares er minOccurs=0."
+    }
+  ]
+}

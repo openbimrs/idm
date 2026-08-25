@@ -1,0 +1,47 @@
+[build-system]
+requires = ["maturin>=1.7,<2"]
+build-backend = "maturin"
+
+[project]
+name = "idmxml"
+version = "0.1.0"
+description = "Lossless ISO 29481-3 idmXML reader, writer and schema-aware editor"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{ name = "openbimrs contributors" }]
+keywords = ["BIM", "IDM", "ISO-29481", "XML"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Rust",
+  "Topic :: Text Processing :: Markup :: XML",
+]
+
+[project.optional-dependencies]
+xsd = ["lxml>=5"]
+test = ["pytest>=8", "lxml>=5", "maturin>=1.7,<2", "ruff>=0.12"]
+
+[project.scripts]
+idmpy = "idmxml.cli:entrypoint"
+
+[tool.maturin]
+features = ["python"]
+manifest-path = "openbim-idm/Cargo.toml"
+module-name = "idmxml._native"
+python-source = "python"
+bindings = "pyo3"
+strip = true
+locked = true
+
+# There is no standard Python equivalent of Cargo's publish=false. Repository
+# release tooling and CI MUST enforce this policy field and reject publication.
+[tool.openbim-idm]
+publish = false
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
