@@ -50,7 +50,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.json:
             print(json.dumps(summary, indent=2))
         else:
-            for key in ("root", "use_cases", "business_context_maps", "exchange_requirements", "errors", "warnings"):
+            for key in (
+                "root",
+                "use_cases",
+                "business_context_maps",
+                "exchange_requirements",
+                "errors",
+                "warnings",
+            ):
                 print(f"{key}: {summary[key]}")
         return 0
     if args.command == "validate":

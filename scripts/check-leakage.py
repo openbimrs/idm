@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail if public source or build artifacts leak standards payloads."""
+
 from __future__ import annotations
 
 import os
@@ -12,7 +13,7 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[1]
 FORBIDDEN_SUFFIXES = {".xsd", ".pdf"}
 FORBIDDEN_PATH_PARTS = {"references", "schemas"}
-XSD_MARKERS = (b"<xs:schema", b"<xsd:schema", b"<schema xmlns=\"http://www.w3.org/2001/XMLSchema\"")
+XSD_MARKERS = (b"<xs:schema", b"<xsd:schema", b'<schema xmlns="http://www.w3.org/2001/XMLSchema"')
 
 
 def fail(message: str) -> None:

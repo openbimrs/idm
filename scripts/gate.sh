@@ -30,6 +30,7 @@ step python3 scripts/check-leakage.py \
 if command -v uv >/dev/null 2>&1; then
   step uv sync --extra test
   step uv run ruff check python tests scripts
+  step uv run ruff format --check python tests scripts
   step uv run maturin develop
   step uv run pytest
   step uv run maturin build --out "$DIST/python"

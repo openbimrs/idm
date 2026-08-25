@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Enforce the canonical-crate/alias boundary and publication guards."""
+
 from __future__ import annotations
 
 import os
@@ -66,7 +67,9 @@ if set(alias_manifest.get("dependencies", {})) != {"openbim-idm"}:
 if "features" in alias_manifest:
     fail("pure Rust alias must not define feature-forwarding behavior")
 
-source_files = sorted(path.relative_to(ALIAS).as_posix() for path in (ALIAS / "src").rglob("*") if path.is_file())
+source_files = sorted(
+    path.relative_to(ALIAS).as_posix() for path in (ALIAS / "src").rglob("*") if path.is_file()
+)
 if source_files != ["src/lib.rs"]:
     fail(f"alias source must contain only src/lib.rs, found {source_files}")
 if (ALIAS / "src" / "lib.rs").read_text(encoding="utf-8") != EXPECTED_SOURCE:

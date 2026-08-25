@@ -6,6 +6,7 @@ XSD parser at runtime. Re-running this script is the provenance check: schema
 SHA-256s and declaration counts must change whenever the source schemas change.
 No schema file is copied into the repository.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -45,7 +46,9 @@ def direct_complex_type(element: etree._Element) -> etree._Element | None:
     return element.find(f"{X}complexType")
 
 
-def type_constraints(type_name: str | None, element: etree._Element, simple_types: dict[str, etree._Element]) -> tuple[str | None, str | None, list[str]]:
+def type_constraints(
+    type_name: str | None, element: etree._Element, simple_types: dict[str, etree._Element]
+) -> tuple[str | None, str | None, list[str]]:
     simple = element.find(f"{X}simpleType")
     if simple is None and type_name:
         simple = simple_types.get(type_name.split(":")[-1])
@@ -84,7 +87,9 @@ def main(schema_dir: Path, output: Path) -> None:
     all_enums: set[str] = set()
     choice_counter = 0
 
-    def build_definition(handle: str, name: str, source_file: str, element: etree._Element, *, global_element: bool) -> None:
+    def build_definition(
+        handle: str, name: str, source_file: str, element: etree._Element, *, global_element: bool
+    ) -> None:
         nonlocal choice_counter
         if handle in definitions:
             return
@@ -103,7 +108,9 @@ def main(schema_dir: Path, output: Path) -> None:
         definitions[handle] = definition
         complex_type = direct_complex_type(element)
         if complex_type is None:
-            data_type, pattern, enum_values = type_constraints(element.get("type"), element, simple_types)
+            data_type, pattern, enum_values = type_constraints(
+                element.get("type"), element, simple_types
+            )
             definition["data_type"] = data_type
             definition["pattern"] = pattern
             definition["enum_values"] = enum_values
@@ -116,21 +123,30 @@ def main(schema_dir: Path, output: Path) -> None:
                 continue
             attr_name = attr_name.split(":")[-1]
             all_attributes.add(attr_name)
-            data_type, pattern, enum_values = type_constraints(attribute.get("type"), attribute, simple_types)
+            data_type, pattern, enum_values = type_constraints(
+                attribute.get("type"), attribute, simple_types
+            )
             all_enums.update(enum_values)
-            definition["attributes"].append({
-                "name": attr_name,
-                "required": attribute.get("use") == "required",
-                "default": attribute.get("default"),
-                "data_type": data_type,
-                "pattern": pattern,
-                "enum_values": enum_values,
-                "label_key": f"schema.attribute.{attr_name}",
-                "source_file": source_file,
-                "source_line": attribute.sourceline,
-            })
+            definition["attributes"].append(
+                {
+                    "name": attr_name,
+                    "required": attribute.get("use") == "required",
+                    "default": attribute.get("default"),
+                    "data_type": data_type,
+                    "pattern": pattern,
+                    "enum_values": enum_values,
+                    "label_key": f"schema.attribute.{attr_name}",
+                    "source_file": source_file,
+                    "source_line": attribute.sourceline,
+                }
+            )
 
-        def walk_particle(node: etree._Element, parent_min: int = 1, parent_max: int | None = 1, choice_group: str | None = None) -> None:
+        def walk_particle(
+            node: etree._Element,
+            parent_min: int = 1,
+            parent_max: int | None = 1,
+            choice_group: str | None = None,
+        ) -> None:
             nonlocal choice_counter
             tag = etree.QName(node).localname
             node_min = occurs(node.get("minOccurs"))
@@ -140,12 +156,14 @@ def main(schema_dir: Path, output: Path) -> None:
             if tag == "choice":
                 group = f"{handle}.choice.{choice_counter}"
                 choice_counter += 1
-                definition["choice_groups"].append({
-                    "handle": group,
-                    "min_occurs": effective_min,
-                    "max_occurs": effective_max,
-                    "children": [],
-                })
+                definition["choice_groups"].append(
+                    {
+                        "handle": group,
+                        "min_occurs": effective_min,
+                        "max_occurs": effective_max,
+                        "children": [],
+                    }
+                )
                 for child in node:
                     if etree.QName(child).namespace == XSD_NS:
                         walk_particle(child, 0, effective_max, group)
@@ -177,20 +195,26 @@ def main(schema_dir: Path, output: Path) -> None:
                     if candidate["handle"] == choice_group
                 )
                 group["children"].append(child_name)
-            definition["children"].append({
-                "name": child_name,
-                "definition": child_handle,
-                "min_occurs": child_min,
-                "max_occurs": child_max,
-                "choice_group": choice_group,
-                "recursive": (name, child_name) in RECURSIVE_WRAPPERS,
-                "label_key": f"schema.element.{child_name}",
-                "source_file": source_file,
-                "source_line": node.sourceline,
-            })
+            definition["children"].append(
+                {
+                    "name": child_name,
+                    "definition": child_handle,
+                    "min_occurs": child_min,
+                    "max_occurs": child_max,
+                    "choice_group": choice_group,
+                    "recursive": (name, child_name) in RECURSIVE_WRAPPERS,
+                    "label_key": f"schema.element.{child_name}",
+                    "source_file": source_file,
+                    "source_line": node.sourceline,
+                }
+            )
 
         for particle in complex_type:
-            if etree.QName(particle).namespace == XSD_NS and etree.QName(particle).localname in {"sequence", "choice", "all"}:
+            if etree.QName(particle).namespace == XSD_NS and etree.QName(particle).localname in {
+                "sequence",
+                "choice",
+                "all",
+            }:
                 walk_particle(particle)
 
     for name, (source_file, element) in sorted(globals_by_name.items()):
@@ -217,7 +241,11 @@ def main(schema_dir: Path, output: Path) -> None:
             if not child["recursive"]:
                 continue
             wrapper = definitions.get(child["definition"])
-            target = wrapper["children"][0]["name"] if wrapper and wrapper["children"] else definition["name"]
+            target = (
+                wrapper["children"][0]["name"]
+                if wrapper and wrapper["children"]
+                else definition["name"]
+            )
             recursive_edges.append(
                 {"from": definition["name"], "wrapper": child["name"], "to": target}
             )

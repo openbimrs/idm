@@ -5,8 +5,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-import idmxml
 import pytest
+
+import idmxml
 
 FIXTURE = Path(__file__).parent / "fixtures" / "recursive-extension.xml"
 
@@ -25,9 +26,7 @@ def _write_synthetic_schema_set(directory: Path) -> None:
 """,
             encoding="utf-8",
         )
-    includes = "\n".join(
-        f'  <xs:include schemaLocation="{name}"/>' for name in auxiliary
-    )
+    includes = "\n".join(f'  <xs:include schemaLocation="{name}"/>' for name in auxiliary)
     directory.joinpath("idm.xsd").write_text(
         f"""<?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -93,7 +92,9 @@ def test_optional_xsd_validation_is_offline_and_uses_explicit_synthetic_schemas(
         idmxml.xsd_validate("<!DOCTYPE idm><idm/>", schema_dir=tmp_path)
 
 
-def test_xsd_validation_requires_an_explicit_schema_location(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_xsd_validation_requires_an_explicit_schema_location(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     pytest.importorskip("lxml")
     monkeypatch.delenv("IDMXML_SCHEMA_DIR", raising=False)
     with pytest.raises(ValueError, match="provide schema_dir"):

@@ -1,4 +1,5 @@
 """Python facade for the Rust-backed ISO 29481-3 idmXML engine."""
+
 from __future__ import annotations
 
 import json
