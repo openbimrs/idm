@@ -3,7 +3,7 @@ name = "openbim-idm"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
-license = "MIT"
+license = "AGPL-3.0-or-later"
 authors = ["openbimrs contributors"]
 repository = "https://github.com/openbimrs/idm"
 readme = "README.md"
@@ -11,7 +11,7 @@ description = "Lossless ISO 29481-3 idmXML reader, writer, editor, CLI, and Pyth
 keywords = ["bim", "idm", "iso-29481", "xml"]
 categories = ["parser-implementations", "data-structures", "command-line-utilities"]
 publish = false
-include = ["src/**", "catalog/catalog.json", "tests/**", "Cargo.toml", "README.md"]
+include = ["src/**", "catalog/catalog.json", "tests/**", "Cargo.toml", "README.md", "LICENSE", "LICENSES/MIT.txt"]
 
 [lib]
 name = "openbim_idm"

@@ -4,7 +4,7 @@ Publication is intentionally blocked. Both Cargo packages use `publish = false`;
 
 ## Why
 
-The implementation is MIT-licensed, but redistribution rights for the six ISO 29481-3 Annex B XSD files have not been established. They are not part of this repository or any intended artifact. The generated `openbim-idm/catalog/catalog.json` contains declarations, source coordinates, and SHA-256 values only—no normative XSD bytes.
+The implementation is licensed under AGPL-3.0-or-later, but redistribution rights for the six ISO 29481-3 Annex B XSD files have not been established. They are not part of this repository or any intended artifact. The generated `openbim-idm/catalog/catalog.json` contains declarations, source coordinates, and SHA-256 values only—no normative XSD bytes.
 
 ## Provenance
 

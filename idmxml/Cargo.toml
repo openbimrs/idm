@@ -3,7 +3,7 @@ name = "idmxml"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
-license = "MIT"
+license = "AGPL-3.0-or-later"
 authors = ["openbimrs contributors"]
 repository = "https://github.com/openbimrs/idm"
 readme = "README.md"
@@ -11,7 +11,7 @@ description = "Pure Rust compatibility alias that re-exports openbim-idm"
 keywords = ["bim", "idm", "xml"]
 categories = ["parser-implementations", "data-structures"]
 publish = false
-include = ["src/lib.rs", "Cargo.toml", "README.md"]
+include = ["src/lib.rs", "Cargo.toml", "README.md", "LICENSE", "LICENSES/MIT.txt"]
 
 [dependencies]
 openbim-idm = { path = "../openbim-idm", version = "=0.1.0", default-features = false }

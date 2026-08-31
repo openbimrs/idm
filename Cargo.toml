@@ -6,7 +6,7 @@ resolver = "2"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
-license = "MIT"
+license = "AGPL-3.0-or-later"
 authors = ["openbimrs contributors"]
 repository = "https://github.com/openbimrs/idm"
 

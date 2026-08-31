@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Lossless ISO 29481-3 idmXML reader, writer and schema-aware editor"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
+license = "AGPL-3.0-or-later"
 authors = [{ name = "openbimrs contributors" }]
 keywords = ["BIM", "IDM", "ISO-29481", "XML"]
 classifiers = [

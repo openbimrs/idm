@@ -31,3 +31,10 @@ At minimum, changes must pass formatting, all-feature build/tests, Clippy with w
 ## Pull requests
 
 Keep commits focused. Explain standards assumptions, include synthetic non-normative fixtures where formal schemas are needed, and report checks actually run. Never attach standards files to an issue or pull request.
+
+## Licensing contributions
+
+Unless an explicitly signed agreement says otherwise, every contribution
+submitted to this repository is licensed under `AGPL-3.0-or-later`. Submit only
+work that you have the right to license. Identify third-party material and
+preserve its license, attribution, and provenance.

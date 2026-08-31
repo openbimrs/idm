@@ -2,7 +2,7 @@
 
 ## Code
 
-The initial implementation was migrated from Poing commit `96fa4d37090af50588032eb666492a02d6fd6727`, path `extensions/apps/aia/packages/idmxml`. Git history for that source path identifies Friedrich Schrödter as its sole author. The extracted implementation and repository-authored documentation are published here under the repository's MIT license; that grant does not cover ISO/DIN schemas, standards, or normative examples. The resulting repository has no source, build, or runtime dependency on Poing or the OpenBIM superproject.
+The initial implementation was migrated from Poing commit `96fa4d37090af50588032eb666492a02d6fd6727`, path `extensions/apps/aia/packages/idmxml`. Git history for that source path identifies Friedrich Schrödter as its sole author. The extracted implementation and repository-authored documentation are published here under the repository's AGPL-3.0-or-later license; that grant does not cover ISO/DIN schemas, standards, or normative examples. The resulting repository has no source, build, or runtime dependency on Poing or the OpenBIM superproject.
 
 ## Generated catalog
 
