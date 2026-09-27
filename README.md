@@ -9,7 +9,7 @@ Lossless, recursive ISO 29481-3 idmXML tooling in Rust, with Rust and Python CLI
 
 **Documentation:** [start here](https://openbimrs.github.io/idm/) · [guide](https://openbimrs.github.io/idm/guide/getting-started) · [API](https://openbimrs.github.io/idm/api/rust) · [architecture](https://openbimrs.github.io/idm/architecture/) · [security](https://openbimrs.github.io/idm/security) · [provenance](https://openbimrs.github.io/idm/provenance) · [changelog](https://openbimrs.github.io/idm/project/changelog)
 
-> **Pre-release and non-publishable:** all package versions are `0.1.0`, but both Cargo packages set `publish = false` and Python publication is blocked by repository policy/gates while rights for redistributing the Annex B XSDs remain unresolved.
+> **Pre-1.0:** `openbim-idm` and its alias `idmxml` are published on crates.io (version `0.2.0`). The Python package is not yet published to PyPI; build it locally. No artifact contains the Annex B XSDs—see [PUBLISHING.md](PUBLISHING.md).
 
 ## What is included
 
@@ -29,7 +29,7 @@ The six Annex B XSD files and all DIN/ISO PDFs are deliberately absent. Put lawf
 | Structural/semantic validation | Yes | Yes | Generated content model plus documented ISO-over-XSD overlays |
 | Formal XSD validation | No | Yes, optional | Requires `lxml` and an explicit six-file schema directory/root path; offline and entity-safe |
 | XML ↔ lossless JSON | Yes | Yes | Complete tree representation, not a reduced domain DTO |
-| Embedded schemas or standards text | **No** | **No** | Intentionally excluded pending rights determination |
+| Embedded schemas or standards text | **No** | **No** | Intentionally excluded; supply a lawfully obtained local copy |
 | ISO 29481-2/BPMN process maps | No | No | Out of scope |
 | Digital signatures / schema repair | No | No | Out of scope |
 
@@ -37,7 +37,7 @@ The six Annex B XSD files and all DIN/ISO PDFs are deliberately absent. Put lawf
 
 ```toml
 [dependencies]
-openbim-idm = { path = "openbim-idm" } # registry publication is blocked today
+openbim-idm = "0.2"
 ```
 
 ```rust

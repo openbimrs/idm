@@ -22,6 +22,6 @@ The source schemas are generation/validation inputs, not distributable runtime a
 - Unknown XML data survives edits.
 - No standards payload in source or generated web/package artifacts.
 - No silent network fallback.
-- Publication stays blocked until provenance and rights gates change together.
+- Every published artifact passes the leakage gate; crates publish only from the release workflow.
 
 See [Canonical and alias crates](./canonical-alias) for the enforced dependency boundary.

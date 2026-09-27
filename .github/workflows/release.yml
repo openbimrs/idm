@@ -1,0 +1,172 @@
+# Publish openbim-idm and its alias idmxml to crates.io when a release tag
+# `v<version>` is pushed.
+#
+# crates.io trusted publishing (OIDC): there is no token secret. crates.io
+# trusts exactly this repository, this file name (`release.yml`) and the
+# `crates.io` environment -- renaming either breaks publishing until each
+# crate's Settings -> Trusted Publishing entry on crates.io follows. The
+# temporary token lives for 30 minutes and is revoked when the job ends.
+#
+# Releasing: bump the workspace and both package versions plus the alias pin,
+# date the CHANGELOG section, commit on main, then push an annotated tag
+# `v<version>` on that commit. Run it by hand (Actions -> Release -> Run
+# workflow) with a tag name to rehearse a release: the tagged commit is gated
+# and packaged, nothing is published.
+#
+# Only crates.io is published. The Python package is not published to PyPI.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to rehearse, e.g. v0.2.0 (gate and package only)"
+        required: true
+
+# Never cancel a release halfway.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+
+jobs:
+  gate:
+    name: Plan and gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
+      - name: Require the tag to be on main
+        # A tag on an unmerged branch would publish code main never gated.
+        run: |
+          git fetch --quiet origin main
+          git merge-base --is-ancestor HEAD origin/main \
+            || { echo "::error::$TAG is not on main"; exit 1; }
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: '22'
+      - name: Install pinned Rust toolchain
+        # rust-toolchain.toml pins the MSRV (1.85.0) with rustfmt and clippy.
+        run: rustup show
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check uv
+      - name: Require the tag to name both crates' version
+        id: plan
+        run: |
+          version="$(cargo metadata --format-version 1 --no-deps \
+            | python3 -c 'import json,sys; v={p["name"]: p["version"] for p in json.load(sys.stdin)["packages"]}; assert v["openbim-idm"] == v["idmxml"], v; print(v["openbim-idm"])')" \
+            || { echo "::error::openbim-idm and idmxml versions differ"; exit 1; }
+          [ "$TAG" = "v$version" ] \
+            || { echo "::error::tag $TAG does not match Cargo.toml version $version"; exit 1; }
+          grep -q "^## \[$version\]" CHANGELOG.md \
+            || { echo "::error::CHANGELOG.md has no [$version] section"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Run the gate on the tagged commit
+        # The same gate as CI: fmt, build, tests, clippy, docs, alias purity
+        # and mutation probe, package + leakage check of both .crate files,
+        # Python build/tests, and docs build. No cache in a release build.
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/openbim-idm-target
+        run: bash scripts/gate.sh
+
+  publish:
+    name: Publish to crates.io
+    needs: gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: crates.io
+      url: https://crates.io/crates/openbim-idm/${{ needs.gate.outputs.version }}
+    permissions:
+      contents: read
+      id-token: write # crates.io trusted publishing (OIDC)
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+      - name: Install pinned Rust toolchain
+        run: rustup show
+      - name: Check which crates are already live
+        # Re-running a partly failed release finishes it instead of failing
+        # on what already succeeded.
+        id: live
+        env:
+          VERSION: ${{ needs.gate.outputs.version }}
+        run: |
+          live() {
+            status="$(curl -s -o /dev/null -w '%{http_code}' \
+              -A 'openbimrs/idm release workflow (github.com/openbimrs/idm)' \
+              "https://crates.io/api/v1/crates/$1/$VERSION")"
+            [ "$status" = 200 ] && echo true || echo false
+          }
+          canonical="$(live openbim-idm)"
+          alias="$(live idmxml)"
+          echo "canonical=$canonical" >> "$GITHUB_OUTPUT"
+          echo "alias=$alias" >> "$GITHUB_OUTPUT"
+          echo "any=$([ "$canonical" = false ] || [ "$alias" = false ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Authenticate with crates.io
+        if: steps.live.outputs.any == 'true'
+        id: auth
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
+      - name: Publish openbim-idm
+        if: steps.live.outputs.canonical != 'true'
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: cargo publish -p openbim-idm --locked
+      - name: Publish idmxml
+        # After openbim-idm: the alias pins its exact version. cargo publish
+        # waits until the canonical crate is available in the index.
+        if: steps.live.outputs.alias != 'true'
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: cargo publish -p idmxml --locked
+
+  github-release:
+    name: GitHub release
+    needs: [gate, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+      - name: Create the release from the changelog section
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.gate.outputs.version }}
+        run: |
+          python3 - > notes.md <<'EOF'
+          import os
+          import re
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          start = text.index(f"## [{os.environ['VERSION']}]")
+          rest = text[start:]
+          end = re.search(r"\n(## \[|\[[^\]]+\]: )", rest[1:])
+          section = rest if end is None else rest[: end.start() + 1]
+          print(section.split("\n", 1)[1].strip())
+          EOF
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG already exists"
+          else
+            gh release create "$TAG" --title "openbim-idm $VERSION" --notes-file notes.md --verify-tag
+          fi

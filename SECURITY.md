@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-No public release is supported yet. Security fixes target `main` while version `0.1.0` remains publication-blocked.
+Security fixes target `main` and the latest `0.x` release of `openbim-idm`/`idmxml` on crates.io. Version `0.1.0` was a placeholder without a parser and is not supported.
 
 ## Reporting
 

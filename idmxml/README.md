@@ -5,4 +5,4 @@ It contains no implementation or types: `src/lib.rs` is exactly `pub use openbim
 and its dependency is pinned to the exact same version. New Rust consumers should depend on
 `openbim-idm`.
 
-Publication is intentionally disabled while standards-material rights are unresolved.
+Licensed under `AGPL-3.0-or-later`. No ISO schema files are included.
