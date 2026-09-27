@@ -34,11 +34,6 @@ bindings = "pyo3"
 strip = true
 locked = true
 
-# There is no standard Python equivalent of Cargo's publish=false. Repository
-# release tooling and CI MUST enforce this policy field and reject publication.
-[tool.openbim-idm]
-publish = false
-
 [tool.ruff]
 target-version = "py39"
 line-length = 100

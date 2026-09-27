@@ -10,7 +10,6 @@ readme = "README.md"
 description = "Pure Rust compatibility alias that re-exports openbim-idm"
 keywords = ["bim", "idm", "xml"]
 categories = ["parser-implementations", "data-structures"]
-publish = false
 include = ["src/lib.rs", "Cargo.toml", "README.md", "LICENSE", "LICENSES/MIT.txt"]
 
 [dependencies]

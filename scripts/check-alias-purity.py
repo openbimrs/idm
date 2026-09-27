@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Enforce the canonical-crate/alias boundary and publication guards."""
+"""Enforce the canonical-crate/alias boundary."""
 
 from __future__ import annotations
 
@@ -28,7 +28,6 @@ def read_toml(path: Path) -> dict:
 root_manifest = read_toml(ROOT / "Cargo.toml")
 canonical_manifest = read_toml(CANONICAL / "Cargo.toml")
 alias_manifest = read_toml(ALIAS / "Cargo.toml")
-pyproject = read_toml(ROOT / "pyproject.toml")
 version = root_manifest["workspace"]["package"]["version"]
 
 workspace_package = root_manifest["workspace"]["package"]
@@ -45,13 +44,6 @@ for label, manifest in (("canonical", canonical_manifest), ("alias", alias_manif
             f"{label} package must declare explicit lint settings matching the standalone "
             "workspace; workspace lint inheritance breaks when pinned in a superproject"
         )
-
-if canonical_manifest["package"].get("publish") is not False:
-    fail("canonical crate must set publish = false")
-if alias_manifest["package"].get("publish") is not False:
-    fail("alias crate must set publish = false")
-if pyproject.get("tool", {}).get("openbim-idm", {}).get("publish") is not False:
-    fail("Python publication guard tool.openbim-idm.publish must be false")
 
 dependency = alias_manifest.get("dependencies", {}).get("openbim-idm")
 if not isinstance(dependency, dict):
@@ -81,4 +73,4 @@ for section in ("lib", "bin", "example", "test", "bench", "build-dependencies", 
     if section in alias_manifest:
         fail(f"alias manifest must not define [{section}]")
 
-print(f"alias-purity: PASS (idmxml -> openbim-idm ={version}; publication blocked)")
+print(f"alias-purity: PASS (idmxml -> openbim-idm ={version})")
