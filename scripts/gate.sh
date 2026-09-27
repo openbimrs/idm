@@ -21,11 +21,16 @@ step python3 scripts/check-alias-purity.py
 step scripts/mutation-probe.sh
 step python3 scripts/check-leakage.py
 
+VERSION="$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')"
 step cargo package -p openbim-idm --allow-dirty --no-verify
-step cargo package -p idmxml --allow-dirty --no-verify
+# The alias pins openbim-idm =$VERSION, which is not on crates.io until the
+# canonical crate is published. Resolve it from the workspace for this
+# pre-publication packaging check; the packaged manifest carries no patch.
+step cargo package -p idmxml --allow-dirty --no-verify \
+  --config 'patch.crates-io.openbim-idm.path="openbim-idm"'
 step python3 scripts/check-leakage.py \
-  "$CARGO_TARGET_DIR/package/openbim-idm-0.1.0.crate" \
-  "$CARGO_TARGET_DIR/package/idmxml-0.1.0.crate"
+  "$CARGO_TARGET_DIR/package/openbim-idm-$VERSION.crate" \
+  "$CARGO_TARGET_DIR/package/idmxml-$VERSION.crate"
 
 if command -v uv >/dev/null 2>&1; then
   step uv sync --extra test

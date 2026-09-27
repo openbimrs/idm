@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "idmxml"
-version = "0.1.0"
+version = "0.2.0"
 description = "Lossless ISO 29481-3 idmXML reader, writer and schema-aware editor"
 readme = "README.md"
 requires-python = ">=3.9"
