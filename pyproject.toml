@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "idmxml"
-version = "0.1.0"
+version = "0.2.0"
 description = "Lossless ISO 29481-3 idmXML reader, writer and schema-aware editor"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -33,11 +33,6 @@ python-source = "python"
 bindings = "pyo3"
 strip = true
 locked = true
-
-# There is no standard Python equivalent of Cargo's publish=false. Repository
-# release tooling and CI MUST enforce this policy field and reject publication.
-[tool.openbim-idm]
-publish = false
 
 [tool.ruff]
 target-version = "py39"

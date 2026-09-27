@@ -30,10 +30,10 @@ features:
     details: Input and depth limits, DOCTYPE rejection, offline schema resolution, and disabled entity expansion are defaults rather than options.
 ---
 
-<span class="badge-boundary">Pre-release · publication blocked</span>
+<span class="badge-boundary">Pre-1.0 · on crates.io</span>
 
 ## Scope at a glance
 
 `openbim-idm` reads, writes, inspects, validates, and schema-edits the machine-readable idmXML format associated with ISO 29481-3. It does not implement ISO 29481-2 BPMN process maps, repair source schemas, or redistribute standards material.
 
-The project is useful locally today, but is deliberately not publishable until Annex B redistribution rights and package provenance are resolved. Start with the [capability guide](/guide/getting-started), then review the [schema boundary](/guide/schema-validation).
+`openbim-idm` and `idmxml` are published on crates.io; the Python package is not yet on PyPI. No artifact contains the Annex B schemas. Start with the [capability guide](/guide/getting-started), then review the [schema boundary](/guide/schema-validation).

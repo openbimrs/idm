@@ -8,7 +8,7 @@ The alias crate's only Rust statement is:
 pub use openbim_idm::*;
 ```
 
-Its dependency is pinned with an exact `=0.1.0` version and a workspace path. Feature names only forward to the canonical crate. Therefore a graph containing both package names resolves one `openbim-idm` instance and one set of Rust types.
+Its dependency is pinned with an exact `=VERSION` requirement (for example `=0.2.0`) and a workspace path. Feature names only forward to the canonical crate. Therefore a graph containing both package names resolves one `openbim-idm` instance and one set of Rust types.
 
 ## Enforcement
 

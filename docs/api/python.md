@@ -23,4 +23,4 @@ round_tripped = idmxml.Document.from_dict(data)
 
 The facade delegates parsing, serialization, catalog-aware edit operations, and structural validation to Rust. `Document.validate()` returns dictionaries with severity, code, path, and message. `allowed_children`, `append_schema_child`, `remove_schema_node`, and `move_schema_node` preserve content-model constraints.
 
-Python 3.9+ is supported through PyO3 `abi3-py39`. The package is pre-release and publication-blocked.
+Python 3.9+ is supported through PyO3 `abi3-py39`. The package is not yet published to PyPI; build it locally with `maturin`.

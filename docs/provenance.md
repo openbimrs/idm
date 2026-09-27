@@ -16,4 +16,4 @@ No Annex B XSD, DIN/ISO PDF, copied standard text, or normative example is commi
 
 ## Publication status
 
-Rights remain unresolved, so both Cargo packages set `publish = false` and Python publication is policy/gate-blocked. See [PUBLISHING.md](https://github.com/openbimrs/idm/blob/main/PUBLISHING.md) for prerequisites.
+The repository owner lifted the publication guards. `openbim-idm` and `idmxml` are published to crates.io from `0.2.0`; the Python package is not yet on PyPI. Published artifacts contain repository-authored code and the generated catalog only, and each passes the leakage check. See [PUBLISHING.md](https://github.com/openbimrs/idm/blob/main/PUBLISHING.md).
