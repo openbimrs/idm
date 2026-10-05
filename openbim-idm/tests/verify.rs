@@ -5,10 +5,13 @@ use sha2::{Digest, Sha256};
 use tempfile::tempdir;
 
 fn sha(bytes: &[u8]) -> String {
+    use std::fmt::Write as _;
     Sha256::digest(bytes)
         .iter()
-        .map(|b| format!("{b:02x}"))
-        .collect()
+        .fold(String::new(), |mut out, b| {
+            let _ = write!(out, "{b:02x}");
+            out
+        })
 }
 
 #[test]

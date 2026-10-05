@@ -97,5 +97,9 @@ pub fn verify_schema_files(
 }
 
 fn hex(bytes: &[u8]) -> String {
-    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+    use std::fmt::Write as _;
+    bytes.iter().fold(String::new(), |mut out, byte| {
+        let _ = write!(out, "{byte:02x}");
+        out
+    })
 }
