@@ -208,6 +208,24 @@ class CloudSetupTests(unittest.TestCase):
             self.assertIn(["cargo", "fetch", "--locked"], commands)
         self.assertFalse(any("install" in c and c[0] == "cargo" for c in commands))
 
+    def test_agent_rules_forbid_session_links_and_are_idempotent(self):
+        home = Path(self.env["HOME"])
+        claude = home / ".claude/CLAUDE.md"
+        codex = home / ".codex/AGENTS.md"
+        claude.parent.mkdir(parents=True)
+        claude.write_text("# Personal notes\n\nKeep answers short.\n")
+        for _ in range(2):
+            result = self.run_setup()
+            self.assertEqual(result.returncode, 0, result.stderr)
+        for path in (claude, codex):
+            text = path.read_text()
+            self.assertEqual(text.count("openbim-idm agent rules: begin"), 1, path)
+            self.assertEqual(text.count("openbim-idm agent rules: end"), 1, path)
+            self.assertIn("claude.ai/code/session_", text)
+            self.assertIn("Never put", text)
+        self.assertIn("Keep answers short.", claude.read_text())
+        self.assertFalse(list(home.glob(".*/*.tmp")))
+
     def test_nonroot_uses_noninteractive_sudo(self):
         result = self.run_setup(FAKE_UID="1000")
         self.assertEqual(result.returncode, 0, result.stderr)
