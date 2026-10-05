@@ -12,11 +12,18 @@ step() { printf '\n==> %s\n' "$*"; "$@"; }
 
 step cargo fmt --all -- --check
 step cargo check -p openbim-idm --no-default-features
+step cargo check -p openbim-idm --no-default-features --features wasm --target wasm32-unknown-unknown
+step cargo clippy -p openbim-idm --no-default-features --features wasm --target wasm32-unknown-unknown -- -D warnings
 step cargo build --workspace --all-features
 step cargo test --workspace --all-features
 step cargo clippy --workspace --all-targets --all-features -- -D warnings
 step env RUSTDOCFLAGS=-Dwarnings cargo doc -p openbim-idm --lib --all-features --no-deps
 step env RUSTDOCFLAGS=-Dwarnings cargo doc -p idmxml --lib --all-features --no-deps
+if command -v wasm-bindgen >/dev/null 2>&1 && command -v node >/dev/null 2>&1; then
+  step scripts/wasm-smoke.sh
+else
+  echo "gate: wasm-bindgen or node unavailable; JS smoke test NOT RUN" >&2
+fi
 step python3 scripts/check-alias-purity.py
 step scripts/mutation-probe.sh
 step python3 scripts/check-leakage.py
@@ -36,6 +43,7 @@ if command -v uv >/dev/null 2>&1; then
   step uv sync --extra test
   step uv run ruff check python tests scripts
   step uv run ruff format --check python tests scripts
+  step uv run mypy
   step uv run maturin develop
   step uv run pytest
   step uv run maturin build --out "$DIST/python"

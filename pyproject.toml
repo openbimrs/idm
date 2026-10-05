@@ -20,7 +20,7 @@ classifiers = [
 
 [project.optional-dependencies]
 xsd = ["lxml>=5"]
-test = ["pytest>=8", "lxml>=5", "maturin>=1.7,<2", "ruff>=0.12"]
+test = ["pytest>=8", "lxml>=5", "maturin>=1.7,<2", "mypy>=1.10", "ruff>=0.12"]
 
 [project.scripts]
 idmpy = "idmxml.cli:entrypoint"
@@ -37,6 +37,19 @@ locked = true
 [tool.ruff]
 target-version = "py39"
 line-length = 100
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+files = ["python/idmxml"]
+
+[[tool.mypy.overrides]]
+module = ["lxml", "lxml.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["idmxml.validation"]
+disallow_subclassing_any = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
