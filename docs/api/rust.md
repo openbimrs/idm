@@ -47,6 +47,28 @@ Paths use indexed local names such as `/idm/uc[0]/subUc[1]`. Every path-taking m
 
 `verify_schema_dir(dir)` hashes the six recognized files in an explicit directory and reports `match`, `mismatch` or `missing` against the catalog, so you can tell whether the catalog validator applies to your schema set.
 
+### Validation issue codes
+
+| Code | Severity | Meaning |
+| --- | --- | --- |
+| `invalid_root` | error | root is not the unqualified `idm` element |
+| `schema_catalog` / `schema_definition` | error | the embedded catalog or a declaration could not be loaded |
+| `required_attribute` | error | a required attribute is missing |
+| `attribute_pattern` | error | the `guid` value does not match the declared pattern |
+| `attribute_datatype` / `element_datatype` | error | value is not valid for its `xs:` built-in type (`expected.type`) |
+| `attribute_enumeration` / `element_enumeration` | error | value is not in the declared enumeration (`expected.enum`) |
+| `minimum_cardinality` / `maximum_cardinality` / `choice_cardinality` | error | child counts outside the declared bounds (`expected.min`/`max`) |
+| `schema_order` | error | element is not in declaration order |
+| `unexpected_text` | error | character data in element-only content |
+| `duplicate_guid` / `duplicate_id` | error | `guid` / `id` values are not unique |
+| `dangling_reference` | warning | `changeLog/@changedBy` matches no `author/@id` (`expected.oneOf`) |
+| `extension_element` / `extension_attribute` | warning | undeclared content, preserved as an extension |
+| overlay codes such as `idm.er.required_by_standard` | error | documented standard-over-XSD semantic overlays |
+
+### Error codes
+
+`Error::code()` returns one of `input_too_large`, `max_depth_exceeded`, `invalid_xml`, `write_failed`, `invalid_utf8`, `invalid_path`, `path_not_found`, `schema`, `invalid_json`, `cardinality`, `content_model`, `io`, `encoding`. The CLI (`--json-errors`), Python (`IdmError.code`) and JS (`Error.code`, `Errors.codes()`) expose the same strings.
+
 ## WebAssembly
 
 `--features wasm` on `wasm32-unknown-unknown` exports a `Document` class that mirrors the Python facade (camelCase, JSON strings for structured values, errors thrown as `Error` objects with a `code`). The only top-level exports are `Document`, `LoadResult` and the namespace classes `Schema` (`Schema.catalogJson()`), `Engine` (`Engine.version()`) and `Errors` (`Errors.codes()`); there are no flat helper functions. Generate glue with `wasm-bindgen`; see `scripts/wasm-smoke.sh`. Nothing is published to npm.
