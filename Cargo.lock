@@ -292,6 +292,7 @@ name = "openbim-idm"
 version = "0.2.0"
 dependencies = [
  "clap",
+ "js-sys",
  "pretty_assertions",
  "pyo3",
  "quick-xml",
@@ -301,6 +302,7 @@ dependencies = [
  "tempfile",
  "thiserror",
  "uuid",
+ "wasm-bindgen",
 ]
 
 [[package]]

@@ -206,7 +206,7 @@ def test_bytes_and_encodings_round_trip_with_metadata(tmp_path: Path) -> None:
     for encoding in ("utf-8", "utf-16le", "utf-16be", "windows-1252"):
         info = idmxml.fileio.load_bytes(document.to_bytes(encoding=encoding))
         assert info.document.attribute("/idm/specId", "fullTitle") == "Gr\u00fc\u00dfe \u20ac"
-        assert (info.encoding == "utf8") or info.warnings
+        assert info.encoding == encoding
     with pytest.raises(idmxml.errors.EncodingError):
         document.to_bytes(encoding="iso-8859-1")
     path = tmp_path / "doc.xml"

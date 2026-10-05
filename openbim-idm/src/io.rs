@@ -4,15 +4,22 @@ use super::*;
 use std::io::{Read, Write};
 
 /// Character encodings the reader and writer understand without extra dependencies.
+///
+/// Serialized names are accepted by [`Encoding::from_label`], so a reported
+/// encoding can be passed straight back to the writer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case")]
 pub enum Encoding {
+    #[serde(rename = "utf-8")]
     Utf8,
+    #[serde(rename = "utf-16le")]
     Utf16Le,
+    #[serde(rename = "utf-16be")]
     Utf16Be,
     /// ISO-8859-1 (also used for `US-ASCII`).
+    #[serde(rename = "iso-8859-1")]
     Latin1,
     /// Windows-1252.
+    #[serde(rename = "windows-1252")]
     Windows1252,
 }
 

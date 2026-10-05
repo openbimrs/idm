@@ -149,3 +149,20 @@ fn paths_and_streams_round_trip_and_writes_are_atomic() {
         "io"
     );
 }
+
+#[test]
+fn encoding_names_round_trip_through_labels() {
+    for encoding in [
+        Encoding::Utf8,
+        Encoding::Utf16Le,
+        Encoding::Utf16Be,
+        Encoding::Latin1,
+        Encoding::Windows1252,
+    ] {
+        let name = serde_json::to_value(encoding).unwrap();
+        assert_eq!(
+            Encoding::from_label(name.as_str().unwrap()).unwrap(),
+            encoding
+        );
+    }
+}

@@ -2024,3 +2024,6 @@ fn walk_elements(element: &Element, path: &str, visitor: &mut impl FnMut(&Elemen
 
 #[cfg(feature = "python")]
 mod python;
+
+#[cfg(feature = "wasm")]
+mod wasm;
