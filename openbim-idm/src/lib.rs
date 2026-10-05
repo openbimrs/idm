@@ -8,6 +8,10 @@
 //! declaration and drives cardinality-aware creation, validation and UI labels.
 
 mod datatype;
+mod node;
+mod ops;
+
+pub use node::{AttributeInfo, AttributeSlot, ChildInfo, NodeInfo};
 
 use quick_xml::XmlVersion;
 use quick_xml::escape::unescape;
@@ -448,12 +452,14 @@ impl Document {
     /// Resolve an indexed path and borrow the complete element, including all
     /// namespace and extension data.
     pub fn element(&self, path: &str) -> Result<&Element> {
+        let path: &str = &self.resolve_locator(path)?;
         resolve(&self.root, &parse_path(path)?).ok_or_else(|| Error::PathNotFound(path.into()))
     }
 
     /// Mutable low-level access for callers that need operations beyond the
     /// convenience editing API.
     pub fn element_mut(&mut self, path: &str) -> Result<&mut Element> {
+        let path: &str = &self.resolve_locator(path)?;
         resolve_mut(&mut self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))
     }
@@ -481,6 +487,7 @@ impl Document {
     }
 
     pub fn child_element_names(&self, path: &str) -> Result<Vec<String>> {
+        let path: &str = &self.resolve_locator(path)?;
         let element = self.element(path)?;
         Ok(element
             .children
@@ -504,6 +511,7 @@ impl Document {
     }
 
     pub fn text(&self, path: &str) -> Result<String> {
+        let path: &str = &self.resolve_locator(path)?;
         let element = resolve(&self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
         let mut text = String::new();
@@ -525,6 +533,7 @@ impl Document {
     /// [`Error::Content`]; undeclared (extension) elements are always
     /// editable. Use [`Document::set_text_unchecked`] to bypass the check.
     pub fn set_text(&mut self, path: &str, value: &str) -> Result<()> {
+        let path: &str = &self.resolve_locator(path)?;
         let catalog = cached_catalog()?;
         if let Ok(handle) = schema_handle_for_path(self, catalog, path) {
             if let Some(definition) = catalog.element(&handle) {
@@ -541,6 +550,7 @@ impl Document {
 
     /// Replace character data without consulting the content model.
     pub fn set_text_unchecked(&mut self, path: &str, value: &str) -> Result<()> {
+        let path: &str = &self.resolve_locator(path)?;
         let element = resolve_mut(&mut self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
         element.children.retain(|node| {
@@ -554,6 +564,7 @@ impl Document {
     }
 
     pub fn attribute(&self, path: &str, name: &str) -> Result<String> {
+        let path: &str = &self.resolve_locator(path)?;
         let element = resolve(&self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
         element
@@ -573,6 +584,7 @@ impl Document {
     }
 
     pub fn set_attribute(&mut self, path: &str, name: &str, value: &str) -> Result<()> {
+        let path: &str = &self.resolve_locator(path)?;
         let segments = parse_path(path)?;
         let namespace = split_qname(name)
             .0
@@ -596,6 +608,7 @@ impl Document {
         qualified_name: &str,
         namespace: Option<&str>,
     ) -> Result<String> {
+        let parent_path: &str = &self.resolve_locator(parent_path)?;
         let segments = parse_path(parent_path)?;
         let resolved_namespace = namespace.map(str::to_owned).or_else(|| {
             split_qname(qualified_name)
@@ -614,6 +627,7 @@ impl Document {
     }
 
     pub fn remove(&mut self, path: &str) -> Result<()> {
+        let path: &str = &self.resolve_locator(path)?;
         let mut segments = parse_path(path)?;
         if segments.len() <= 1 {
             return Err(Error::InvalidPath(
@@ -665,6 +679,7 @@ impl Document {
     }
 
     pub fn allowed_children(&self, parent_path: &str) -> Result<Vec<ChildAction>> {
+        let parent_path: &str = &self.resolve_locator(parent_path)?;
         let catalog = cached_catalog()?;
         let handle = schema_handle_for_path(self, catalog, parent_path)?;
         let definition = catalog
@@ -691,6 +706,7 @@ impl Document {
     }
 
     pub fn append_schema_child(&mut self, parent_path: &str, name: &str) -> Result<String> {
+        let parent_path: &str = &self.resolve_locator(parent_path)?;
         let catalog = cached_catalog()?;
         let parent_handle = schema_handle_for_path(self, catalog, parent_path)?;
         let parent_rule = catalog
@@ -717,6 +733,7 @@ impl Document {
     }
 
     pub fn remove_schema_node(&mut self, path: &str) -> Result<()> {
+        let path: &str = &self.resolve_locator(path)?;
         let mut segments = parse_path(path)?;
         if segments.len() <= 1 {
             return Err(Error::InvalidPath("the IDM root cannot be removed".into()));
@@ -780,6 +797,8 @@ impl Document {
         target_path: &str,
         after: bool,
     ) -> Result<String> {
+        let path: &str = &self.resolve_locator(path)?;
+        let target_path: &str = &self.resolve_locator(target_path)?;
         let mut source_segments = parse_path(path)?;
         let mut target_segments = parse_path(target_path)?;
         if source_segments.len() <= 1 || target_segments.len() <= 1 {
@@ -1807,6 +1826,21 @@ fn validate_element_text(
             );
         }
     }
+}
+
+/// Render a path with an explicit index on every segment (`/idm[0]/uc[0]`
+/// is spelled `/idm/uc[0]` by convention: the root never carries an index).
+fn canonical_path(path: &str) -> Result<String> {
+    let segments = parse_path(path)?;
+    let mut canonical = String::new();
+    for (position, segment) in segments.iter().enumerate() {
+        canonical.push('/');
+        canonical.push_str(&segment.name);
+        if position > 0 {
+            canonical.push_str(&format!("[{}]", segment.index));
+        }
+    }
+    Ok(canonical)
 }
 
 fn format_path(segments: &[PathSegment]) -> String {
