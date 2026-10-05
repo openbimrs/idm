@@ -42,13 +42,13 @@ uv run pytest
 from pathlib import Path
 import idmxml
 
-document = idmxml.load(Path("model.idmxml"))
+document = idmxml.fileio.load(Path("model.idmxml"))
 print(document.count("er"))
 print(document.validate())
 ```
 
 ## What “lossless” means
 
-The data model is the complete XML tree, not a narrowed business DTO. A parse/serialize cycle retains qualified names, namespace URIs and prefixes, unknown/vendor content, child and attribute ordering, comments, CDATA, and processing instructions. Pretty formatting may change whitespace; compact serialization and the tree JSON form make structural equality testable.
+The data model is the complete XML tree, not a narrowed business DTO. A parse/serialize cycle retains qualified names, namespace URIs and prefixes, unknown/vendor content, child and attribute ordering, comments, CDATA, and processing instructions. Pretty formatting may change whitespace; compact serialization and the tree JSON form make structural equality testable. Character and entity references are kept as their own nodes, and text set through the API is stored the same way, so an edited document equals the document read back from its serialization. Text that XML cannot carry (control characters, `]]>` inside CDATA, `--` inside comments) is rejected instead of being written as unreadable output. Element nesting is limited to `DEFAULT_MAX_XML_DEPTH` (256) for XML, JSON and edits alike.
 
 Next: [formal schema validation without bundled schemas](./schema-validation).

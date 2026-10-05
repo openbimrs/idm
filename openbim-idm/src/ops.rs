@@ -161,6 +161,8 @@ impl Document {
         let parent_rule = catalog
             .element(&parent_handle)
             .ok_or_else(|| Error::Schema(format!("missing schema definition `{parent_handle}`")))?;
+        let mut node = node;
+        normalize_empty_text(&mut node);
         let name = node.local_name.clone();
         let declared = parent_rule.child(&name);
         let current = child_elements(self.element(parent_path)?, &name).count();

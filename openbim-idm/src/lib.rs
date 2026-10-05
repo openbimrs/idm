@@ -10,6 +10,7 @@
 mod datatype;
 mod edit;
 mod io;
+mod json;
 mod node;
 mod ops;
 mod verify;
@@ -39,7 +40,12 @@ use uuid::Uuid;
 
 pub const IDM_SCHEMA_LOCATION: &str = "idm.xsd";
 pub const DEFAULT_MAX_XML_BYTES: usize = 64 * 1024 * 1024;
-pub const DEFAULT_MAX_XML_DEPTH: usize = 1_024;
+/// Maximum element nesting accepted by every reader (XML, JSON and edits).
+///
+/// Far above any realistic IDM (each recursive `subUc`/`subIdm` level adds two
+/// elements) while keeping every recursive operation within a 512 KiB stack in
+/// release builds and the default 2 MiB thread stack in debug builds.
+pub const DEFAULT_MAX_XML_DEPTH: usize = 256;
 
 /// Annex B filenames expected by schema-aware APIs.
 ///
@@ -149,7 +155,9 @@ pub enum Node {
     ProcessingInstruction(String),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+/// Deserialization is implemented iteratively (see the `json` module) so deep
+/// trees cannot exhaust the stack.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Element {
     /// Qualified spelling used in the source, such as `dt:Name`.
     pub qualified_name: String,
@@ -205,7 +213,7 @@ impl Element {
             qualified_name: qualified_name.into(),
             local_name: local_name.into(),
             prefix: prefix.map(str::to_owned),
-            namespace: None,
+            namespace: builtin_attribute_namespace(qualified_name).map(str::to_owned),
             value: value.into(),
         });
     }
@@ -447,6 +455,11 @@ impl Document {
         }
     }
 
+    /// Path of the root element (`/idm` for IDM documents).
+    fn root_path(&self) -> String {
+        format!("/{}", self.root.local_name)
+    }
+
     #[must_use]
     pub fn root(&self) -> &Element {
         &self.root
@@ -475,7 +488,7 @@ impl Document {
     #[must_use]
     pub fn count(&self, name: &str) -> usize {
         let mut count = 0;
-        walk_elements(&self.root, "/idm", &mut |element, _| {
+        walk_elements(&self.root, &self.root_path(), &mut |element, _| {
             if element.local_name == name {
                 count += 1;
             }
@@ -486,7 +499,7 @@ impl Document {
     #[must_use]
     pub fn element_paths(&self, name: &str) -> Vec<String> {
         let mut found = Vec::new();
-        walk_elements(&self.root, "/idm", &mut |element, path| {
+        walk_elements(&self.root, &self.root_path(), &mut |element, path| {
             if element.local_name == name {
                 found.push(path.to_owned());
             }
@@ -510,7 +523,7 @@ impl Document {
     #[must_use]
     pub fn find_by_guid(&self, guid: &str) -> Vec<String> {
         let mut found = Vec::new();
-        walk_elements(&self.root, "/idm", &mut |element, path| {
+        walk_elements(&self.root, &self.root_path(), &mut |element, path| {
             if attribute_by_local(element, "guid") == Some(guid) {
                 found.push(path.to_owned());
             }
@@ -558,6 +571,7 @@ impl Document {
 
     /// Replace character data without consulting the content model.
     pub fn set_text_unchecked(&mut self, path: &str, value: &str) -> Result<()> {
+        require_xml_chars(value)?;
         let path: &str = &self.resolve_locator(path)?;
         let element = resolve_mut(&mut self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
@@ -567,7 +581,8 @@ impl Document {
                 Node::Text(_) | Node::GeneralReference(_) | Node::CData(_)
             )
         });
-        element.children.insert(0, Node::Text(value.into()));
+        let nodes = text_nodes(value);
+        element.children.splice(0..0, nodes);
         Ok(())
     }
 
@@ -592,11 +607,15 @@ impl Document {
     }
 
     pub fn set_attribute(&mut self, path: &str, name: &str, value: &str) -> Result<()> {
+        require_xml_chars(value)?;
         let path: &str = &self.resolve_locator(path)?;
         let segments = parse_path(path)?;
-        let namespace = split_qname(name)
-            .0
-            .and_then(|prefix| namespace_for_prefix(&self.root, &segments, prefix));
+        let namespace = match builtin_attribute_namespace(name) {
+            Some(builtin) => Some(builtin.to_owned()),
+            None => split_qname(name)
+                .0
+                .and_then(|prefix| namespace_for_prefix(&self.root, &segments, prefix)),
+        };
         let element = resolve_mut(&mut self.root, &segments)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
         element.set_attribute(name, value);
@@ -872,7 +891,7 @@ impl Document {
         let mut guids = BTreeSet::new();
         let mut ids = BTreeSet::new();
         let mut author_ids = BTreeSet::new();
-        walk_elements(&self.root, "/idm", &mut |element, path| {
+        walk_elements(&self.root, &self.root_path(), &mut |element, path| {
             if let Some(guid) = attribute_by_local(element, "guid") {
                 if !guids.insert(guid.to_owned()) {
                     issues.push(
@@ -893,7 +912,7 @@ impl Document {
                 }
             }
         });
-        walk_elements(&self.root, "/idm", &mut |element, path| {
+        walk_elements(&self.root, &self.root_path(), &mut |element, path| {
             if element.local_name == "changeLog" {
                 if let Some(author) = attribute_by_local(element, "changedBy") {
                     if !author_ids.contains(author) {
@@ -1165,8 +1184,8 @@ fn read_element(
         let attribute = attribute.map_err(|error| Error::Xml(error.to_string()))?;
         let qualified = String::from_utf8_lossy(attribute.key.as_ref()).into_owned();
         let (_, local) = split_qname(&qualified);
-        let namespace = if qualified == "xmlns" || qualified.starts_with("xmlns:") {
-            Some("http://www.w3.org/2000/xmlns/".into())
+        let namespace = if let Some(builtin) = builtin_attribute_namespace(&qualified) {
+            Some(builtin.into())
         } else {
             let (resolved, _) = reader.resolver().resolve_attribute(attribute.key);
             resolved_namespace(resolved)?
@@ -1236,10 +1255,90 @@ fn push_misc_node(
     }
 }
 
+/// Escape character data so a conforming reader returns exactly `value`.
+///
+/// Beyond the markup characters, `\r` is always written as a character
+/// reference (readers normalize line endings), and in attribute values tabs and
+/// newlines are too (readers normalize attribute whitespace to spaces).
+fn escape_markup(value: &str, attribute: bool) -> String {
+    let mut escaped = String::with_capacity(value.len());
+    for character in value.chars() {
+        match character {
+            '&' => escaped.push_str("&amp;"),
+            '<' => escaped.push_str("&lt;"),
+            '>' if attribute || escaped.ends_with("]]") => escaped.push_str("&gt;"),
+            '"' if attribute => escaped.push_str("&quot;"),
+            '\r' => escaped.push_str("&#13;"),
+            '\t' if attribute => escaped.push_str("&#9;"),
+            '\n' if attribute => escaped.push_str("&#10;"),
+            other => escaped.push(other),
+        }
+    }
+    escaped
+}
+
+/// Setter-side variant of [`check_xml_chars`]: report as a content error.
+fn require_xml_chars(value: &str) -> Result<()> {
+    check_xml_chars(value, "value").map_err(|error| match error {
+        Error::Write(message) => Error::Content(message),
+        other => other,
+    })
+}
+
+/// Reject content that would make the output unparseable, so `to_xml` never
+/// produces XML this crate (or any conforming parser) cannot read back.
+fn check_xml_chars(value: &str, context: &str) -> Result<()> {
+    match value.chars().find(|&c| !is_xml_1_0_character(c)) {
+        Some(c) => Err(Error::Write(format!(
+            "U+{:04X} is not allowed in XML 1.0 ({context})",
+            u32::from(c)
+        ))),
+        None => Ok(()),
+    }
+}
+
+fn check_xml_name(name: &str) -> Result<()> {
+    let mut characters = name.chars();
+    let valid = characters
+        .next()
+        .is_some_and(|c| c.is_alphabetic() || matches!(c, '_' | ':'))
+        && characters.all(|c| c.is_alphanumeric() || matches!(c, '_' | ':' | '-' | '.' | '\u{B7}'));
+    if valid {
+        Ok(())
+    } else {
+        Err(Error::Write(format!("`{name}` is not a valid XML name")))
+    }
+}
+
+fn check_node_text(node: &Node) -> Result<()> {
+    match node {
+        Node::Text(value) => check_xml_chars(value, "text"),
+        Node::CData(value) if value.contains("]]>") => {
+            Err(Error::Write("CDATA cannot contain `]]>`".into()))
+        }
+        Node::CData(value) => check_xml_chars(value, "CDATA"),
+        Node::Comment(value) if value.contains("--") || value.ends_with('-') => Err(Error::Write(
+            "comments cannot contain `--` or end with `-`".into(),
+        )),
+        Node::Comment(value) => check_xml_chars(value, "comment"),
+        Node::ProcessingInstruction(value) if value.contains("?>") => Err(Error::Write(
+            "processing instructions cannot contain `?>`".into(),
+        )),
+        Node::ProcessingInstruction(value) => check_xml_chars(value, "processing instruction"),
+        Node::Element(_) | Node::GeneralReference(_) => Ok(()),
+    }
+}
+
 fn write_element(writer: &mut Writer<Vec<u8>>, element: &Element) -> Result<()> {
+    check_xml_name(&element.qualified_name)?;
     let mut start = BytesStart::new(&element.qualified_name);
     for attribute in &element.attributes {
-        start.push_attribute((attribute.qualified_name.as_str(), attribute.value.as_str()));
+        check_xml_name(&attribute.qualified_name)?;
+        check_xml_chars(&attribute.value, "attribute value")?;
+        start.push_attribute(quick_xml::events::attributes::Attribute {
+            key: quick_xml::name::QName(attribute.qualified_name.as_bytes()),
+            value: std::borrow::Cow::Owned(escape_markup(&attribute.value, true).into_bytes()),
+        });
     }
     if element.children.is_empty() {
         writer
@@ -1251,10 +1350,13 @@ fn write_element(writer: &mut Writer<Vec<u8>>, element: &Element) -> Result<()> 
         .write_event(Event::Start(start.borrow()))
         .map_err(write_error)?;
     for child in &element.children {
+        check_node_text(child)?;
         match child {
             Node::Element(child) => write_element(writer, child)?,
             Node::Text(value) => writer
-                .write_event(Event::Text(BytesText::new(value)))
+                .write_event(Event::Text(BytesText::from_escaped(escape_markup(
+                    value, false,
+                ))))
                 .map_err(write_error)?,
             Node::GeneralReference(reference) => {
                 resolve_general_reference(reference)?;
@@ -1266,7 +1368,7 @@ fn write_element(writer: &mut Writer<Vec<u8>>, element: &Element) -> Result<()> 
                 .write_event(Event::CData(BytesCData::new(value)))
                 .map_err(write_error)?,
             Node::Comment(value) => writer
-                .write_event(Event::Comment(BytesText::new(value)))
+                .write_event(Event::Comment(BytesText::from_escaped(value.as_str())))
                 .map_err(write_error)?,
             Node::ProcessingInstruction(value) => writer
                 .write_event(Event::PI(BytesPI::new(value)))
@@ -1280,9 +1382,10 @@ fn write_element(writer: &mut Writer<Vec<u8>>, element: &Element) -> Result<()> 
 }
 
 fn write_document_level_node(writer: &mut Writer<Vec<u8>>, node: &Node) -> Result<()> {
+    check_node_text(node)?;
     match node {
         Node::Comment(value) => writer
-            .write_event(Event::Comment(BytesText::new(value)))
+            .write_event(Event::Comment(BytesText::from_escaped(value.as_str())))
             .map_err(write_error),
         Node::ProcessingInstruction(value) => writer
             .write_event(Event::PI(BytesPI::new(value)))
@@ -1372,6 +1475,17 @@ fn issue(code: &str, path: &str, message: &str) -> ValidationIssue {
         message: message.into(),
         attribute: None,
         expected: None,
+    }
+}
+
+/// Namespaces bound by the XML specs themselves (never declared in documents).
+fn builtin_attribute_namespace(qualified_name: &str) -> Option<&'static str> {
+    if qualified_name == "xmlns" || qualified_name.starts_with("xmlns:") {
+        Some("http://www.w3.org/2000/xmlns/")
+    } else if qualified_name.starts_with("xml:") {
+        Some("http://www.w3.org/XML/1998/namespace")
+    } else {
+        None
     }
 }
 
@@ -1874,13 +1988,53 @@ fn warning(code: &str, path: &str, message: &str) -> ValidationIssue {
     }
 }
 
-fn normalize_empty_text(element: &mut Element) {
-    element
-        .children
-        .retain(|node| !matches!(node, Node::Text(value) if value.is_empty()));
-    for child in &mut element.children {
-        if let Node::Element(child) = child {
-            normalize_empty_text(child);
+/// Character data as the nodes a reader produces for it.
+///
+/// The reader keeps character and entity references as `GeneralReference`
+/// nodes so sources round-trip byte-faithfully. Text that needs escaping is
+/// therefore split the same way here: `&` and `<` become `amp`/`lt`, `>` after
+/// `]]` becomes `gt`, and a carriage return (which readers would otherwise
+/// normalize) becomes `#13`. A document built through the API thus equals the
+/// document obtained by writing and re-reading it.
+fn text_nodes(value: &str) -> Vec<Node> {
+    let mut nodes = Vec::new();
+    let mut buffer = String::new();
+    for character in value.chars() {
+        let reference = match character {
+            '&' => Some("amp"),
+            '<' => Some("lt"),
+            '\r' => Some("#13"),
+            '>' if buffer.ends_with("]]") => Some("gt"),
+            _ => None,
+        };
+        match reference {
+            Some(reference) => {
+                if !buffer.is_empty() {
+                    nodes.push(Node::Text(std::mem::take(&mut buffer)));
+                }
+                nodes.push(Node::GeneralReference(reference.into()));
+            }
+            None => buffer.push(character),
+        }
+    }
+    if !buffer.is_empty() {
+        nodes.push(Node::Text(buffer));
+    }
+    nodes
+}
+
+/// Bring text into the reader's canonical form (see [`text_nodes`]) and drop
+/// empty text, so the tree matches what parsing its serialization yields.
+pub(crate) fn normalize_empty_text(element: &mut Element) {
+    let children = std::mem::take(&mut element.children);
+    for node in children {
+        match node {
+            Node::Text(value) => element.children.extend(text_nodes(&value)),
+            Node::Element(mut child) => {
+                normalize_empty_text(&mut child);
+                element.children.push(Node::Element(child));
+            }
+            other => element.children.push(other),
         }
     }
 }

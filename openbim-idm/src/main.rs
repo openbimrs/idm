@@ -315,8 +315,7 @@ fn run(cli: Cli) -> CliResult<ExitCode> {
             output,
             compact,
         } => {
-            let value = serde_json::from_str(&read_text(&input)?)?;
-            let xml = Document::from_value(&value)?.to_xml(!compact)?;
+            let xml = Document::from_json_str(&read_text(&input)?)?.to_xml(!compact)?;
             write_text(output.as_deref(), &xml)?;
             Ok(ExitCode::SUCCESS)
         }
@@ -520,7 +519,7 @@ fn run(cli: Cli) -> CliResult<ExitCode> {
             undo,
             out,
         } => {
-            let batch: EditBatch = serde_json::from_str(&read_text(&edits)?)?;
+            let batch = EditBatch::from_json_str(&read_text(&edits)?)?;
             let mut inverse = None;
             let code = edit(&input, &out, |document| {
                 inverse = Some(document.apply_batch(&batch)?);

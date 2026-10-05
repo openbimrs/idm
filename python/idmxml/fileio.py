@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
+import os
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union
@@ -56,5 +59,16 @@ def dumps(document: Document, *, pretty: bool = True) -> str:
 def dump(
     document: Document, path: PathLike, *, pretty: bool = True, encoding: str = "utf-8"
 ) -> None:
-    """Write a file; the content is serialized before the file is touched."""
-    Path(path).write_bytes(document.to_bytes(pretty=pretty, encoding=encoding))
+    """Write a file atomically: serialize first, write a temporary file in the
+    same directory, then replace the target, so a failure never truncates it."""
+    data = document.to_bytes(pretty=pretty, encoding=encoding)
+    target = Path(path)
+    descriptor, temporary = tempfile.mkstemp(prefix=f".{target.name}.", dir=target.parent or ".")
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(data)
+        os.replace(temporary, target)
+    except BaseException:
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink(temporary)
+        raise

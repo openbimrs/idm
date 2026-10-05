@@ -9,7 +9,7 @@ Lossless, recursive ISO 29481-3 idmXML tooling in Rust, with Rust and Python CLI
 
 **Documentation:** [start here](https://openbimrs.github.io/idm/) · [guide](https://openbimrs.github.io/idm/guide/getting-started) · [API](https://openbimrs.github.io/idm/api/rust) · [architecture](https://openbimrs.github.io/idm/architecture/) · [security](https://openbimrs.github.io/idm/security) · [provenance](https://openbimrs.github.io/idm/provenance) · [changelog](https://openbimrs.github.io/idm/project/changelog)
 
-> **Pre-1.0:** `openbim-idm` and its alias `idmxml` are published on crates.io (version `0.2.0`). The Python package is not yet published to PyPI; build it locally. No artifact contains the Annex B XSDs—see [PUBLISHING.md](PUBLISHING.md).
+> **Pre-1.0:** `openbim-idm` and its alias `idmxml` are published on crates.io (version `0.3.0`). The Python package is not yet published to PyPI; build it locally. No artifact contains the Annex B XSDs—see [PUBLISHING.md](PUBLISHING.md).
 
 ## What is included
 
@@ -81,7 +81,7 @@ assert not [issue for issue in idm.validate() if issue["severity"] == "error"]
 Formal validation never searches the network or silently uses bundled material:
 
 ```python
-issues = idmxml.xsd_validate(idm, schema_dir="references/schema/iso29481-3")
+issues = idmxml.validation.xsd_validate(idm, schema_dir="references/schema/iso29481-3")
 # Or set IDMXML_SCHEMA_DIR, or pass schema_path=".../idm.xsd".
 ```
 

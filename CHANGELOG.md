@@ -4,6 +4,8 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-05
+
 ### Added
 
 - Validation of XSD built-in lexical types, element enumerations, element-only content, unknown attributes (warning), duplicate `id` values and `changedBy` references; `ValidationIssue` gains optional `attribute` and `expected` fields.
@@ -17,8 +19,22 @@ All notable changes to this project are documented here. The format follows [Kee
 - Python: namespaced modules (`idmxml.fileio`, `.schema`, `.validation`, `.errors`, `.models`), coded exception hierarchy, typed shapes, `py.typed`, `Document.copy/==`, node/edit/diff/bytes APIs, and an `idmpy` CLI with matching commands.
 - `wasm` feature: a `wasm32-unknown-unknown` binding mirroring the Python facade.
 
+### Fixed
+
+- Comments containing `"`, `'`, `<`, `>` or `&` were written with entity escapes and corrupted on every round trip.
+- Tabs, newlines and carriage returns in attribute values, and carriage returns in text, were normalized away when read back; they are now written as character references.
+- Text containing `&`, `<` or `]]>` set through the API (or supplied as tree JSON) did not equal its reloaded form, so `from_value`/`from_dict` rejected such documents. Text is now stored in the reader's canonical form.
+- `to_xml` could emit unreadable XML (control characters, `]]>` in CDATA, `--` in comments, `?>` in processing instructions, invalid names); it now returns `Error::Write`, and `set_text`/`set_attribute` reject such characters up front.
+- Tree JSON deeper than about 40 elements could not be read back (serde_json's recursion limit); `Document::from_json_str`, `Edit::from_json_str` and `EditBatch::from_json_str` accept the full depth range, and the CLI, Python and WASM bindings use them.
+- Documents within the old depth limit could overflow small thread stacks (a process abort); see the depth limit change below.
+- Element paths for documents whose root is not `idm` used `/idm` as their first segment.
+- Undoing a `Move` out of a same-name sibling's subtree targeted the wrong parent.
+- `xmlns:*` and `xml:*` attributes set through the API now carry their built-in namespaces, matching what the reader produces.
+- Python `fileio.dump` writes atomically.
+
 ### Changed
 
+- **Breaking:** `DEFAULT_MAX_XML_DEPTH` is now 256 (was 1024) and applies to XML, JSON and edits. Every operation at this depth fits a 512 KiB stack in release builds (WASM) and the default 2 MiB thread stack in debug builds.
 - **Breaking (Rust):** `Error` is `#[non_exhaustive]` and has new variants; `ValidationIssue` has new optional fields; `Document::set_text` rejects element-only elements (use `set_text_unchecked`).
 - Generated `new_idm` skeletons point `changeLog/@changedBy` at the generated author's `id`.
 - The embedded schema catalog is parsed once per process.
@@ -62,6 +78,7 @@ former `openbimrs/openbim` monorepo.
 Name reservation published from the former `openbimrs/openbim` monorepo under
 MIT: a `DocumentKind` placeholder enum and no parser. Superseded by `0.2.0`.
 
-[Unreleased]: https://github.com/openbimrs/idm/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/openbimrs/idm/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/openbimrs/idm/releases/tag/v0.3.0
 [0.2.0]: https://github.com/openbimrs/idm/releases/tag/v0.2.0
 [0.1.0]: https://crates.io/crates/openbim-idm/0.1.0
