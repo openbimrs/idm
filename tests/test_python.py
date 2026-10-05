@@ -261,3 +261,10 @@ def test_python_cli_edits_in_place_and_round_trips_edits(tmp_path: Path) -> None
     assert json.loads(_cli("diff", applied, other).stdout)["edits"] == []
     assert json.loads(undo.read_text(encoding="utf-8"))["edits"]
     assert _cli("schema", "--verify", tmp_path).returncode == 2
+
+
+def test_public_surface_is_namespaced() -> None:
+    assert set(idmxml.__all__) == {"Document", "errors", "fileio", "models", "schema", "validation"}
+    namespace: dict[str, object] = {}
+    exec("from idmxml import *", namespace)  # noqa: S102 - checks the star-import surface
+    assert {k for k in namespace if not k.startswith("__")} == set(idmxml.__all__)

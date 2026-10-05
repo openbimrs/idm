@@ -5,6 +5,11 @@ const path = require("node:path");
 const idmxml = require(path.join(process.argv[2], "openbim_idm.js"));
 const { Document } = idmxml;
 
+// The top-level surface is a closed set of namespaces/classes (no flat helpers).
+const exported = Object.keys(idmxml).filter((name) => !name.startsWith("__")).sort();
+assert.deepEqual(exported, ["Document", "Engine", "Errors", "LoadResult", "Schema"]);
+assert.equal(idmxml.Errors.codes().path_not_found, "path_not_found");
+
 // Nothing may leak onto globalThis; the module itself is the namespace.
 assert.equal(typeof globalThis.Document, "undefined");
 
@@ -48,5 +53,5 @@ assert.throws(() => document.text("/idm/missing"), (error) => {
 });
 assert.throws(() => document.setText("/idm/uc", "x"), (error) => error.code === "content_model");
 
-assert.ok(JSON.parse(idmxml.schemaCatalogJson()).element_names.length > 0);
-console.log(`wasm smoke test passed (engine ${idmxml.engineVersion()})`);
+assert.ok(JSON.parse(idmxml.Schema.catalogJson()).element_names.length > 0);
+console.log(`wasm smoke test passed (engine ${idmxml.Engine.version()})`);

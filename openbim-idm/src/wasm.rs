@@ -4,7 +4,10 @@
 //! values exchanged as JSON strings (`*Json` methods), and errors thrown as
 //! `Error` objects carrying a stable `code`. Importing the generated module as
 //! a namespace (`import * as idmxml from "./idmxml.js"`) keeps every export
-//! under that namespace; nothing is installed on `globalThis`.
+//! under that namespace; nothing is installed on `globalThis`. Free helpers
+//! live on namespace classes (`Schema`, `Engine`, `Errors`) rather than as
+//! top-level functions, so the only top-level exports are `Document`,
+//! `LoadResult`, `Schema`, `Engine` and `Errors`.
 
 use crate::{Document, Edit, EditBatch, Element, Encoding, Error, cached_catalog};
 use js_sys::{Object, Reflect};
@@ -312,37 +315,57 @@ impl WasmDocument {
     }
 }
 
-/// The generated declaration catalog as JSON.
-#[wasm_bindgen(js_name = schemaCatalogJson)]
-pub fn schema_catalog_json() -> JsResult<String> {
-    to_json(cached_catalog().map_err(js_error)?)
-}
+/// Namespace for schema-catalog helpers (`Schema.catalogJson()`).
+#[wasm_bindgen(js_name = Schema)]
+pub struct WasmSchema;
 
-/// Package/engine version, useful for diagnostics in bug reports.
-#[wasm_bindgen(js_name = engineVersion)]
-pub fn engine_version() -> String {
-    env!("CARGO_PKG_VERSION").to_owned()
-}
-
-#[wasm_bindgen(js_name = errorCodes)]
-pub fn error_codes() -> JsValue {
-    let object = Object::new();
-    for code in [
-        "input_too_large",
-        "max_depth_exceeded",
-        "invalid_xml",
-        "write_failed",
-        "invalid_utf8",
-        "invalid_path",
-        "path_not_found",
-        "schema",
-        "invalid_json",
-        "cardinality",
-        "content_model",
-        "io",
-        "encoding",
-    ] {
-        let _ = Reflect::set(&object, &code.into(), &code.into());
+#[wasm_bindgen(js_class = Schema)]
+impl WasmSchema {
+    /// The generated declaration catalog as JSON.
+    #[wasm_bindgen(js_name = catalogJson)]
+    pub fn catalog_json() -> JsResult<String> {
+        to_json(cached_catalog().map_err(js_error)?)
     }
-    object.into()
+}
+
+/// Namespace for engine metadata (`Engine.version()`).
+#[wasm_bindgen(js_name = Engine)]
+pub struct WasmEngine;
+
+#[wasm_bindgen(js_class = Engine)]
+impl WasmEngine {
+    /// Package/engine version, useful for diagnostics in bug reports.
+    pub fn version() -> String {
+        env!("CARGO_PKG_VERSION").to_owned()
+    }
+}
+
+/// Namespace for error metadata (`Errors.codes()`).
+#[wasm_bindgen(js_name = Errors)]
+pub struct WasmErrors;
+
+#[wasm_bindgen(js_class = Errors)]
+impl WasmErrors {
+    /// Object mapping every stable error `code` to itself.
+    pub fn codes() -> JsValue {
+        let object = Object::new();
+        for code in [
+            "input_too_large",
+            "max_depth_exceeded",
+            "invalid_xml",
+            "write_failed",
+            "invalid_utf8",
+            "invalid_path",
+            "path_not_found",
+            "schema",
+            "invalid_json",
+            "cardinality",
+            "content_model",
+            "io",
+            "encoding",
+        ] {
+            let _ = Reflect::set(&object, &code.into(), &code.into());
+        }
+        object.into()
+    }
 }

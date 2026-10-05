@@ -49,7 +49,7 @@ Paths use indexed local names such as `/idm/uc[0]/subUc[1]`. Every path-taking m
 
 ## WebAssembly
 
-`--features wasm` on `wasm32-unknown-unknown` exports a `Document` class that mirrors the Python facade (camelCase, JSON strings for structured values, errors thrown as `Error` objects with a `code`). Generate glue with `wasm-bindgen`; see `scripts/wasm-smoke.sh`. Nothing is published to npm.
+`--features wasm` on `wasm32-unknown-unknown` exports a `Document` class that mirrors the Python facade (camelCase, JSON strings for structured values, errors thrown as `Error` objects with a `code`). The only top-level exports are `Document`, `LoadResult` and the namespace classes `Schema` (`Schema.catalogJson()`), `Engine` (`Engine.version()`) and `Errors` (`Errors.codes()`); there are no flat helper functions. Generate glue with `wasm-bindgen`; see `scripts/wasm-smoke.sh`. Nothing is published to npm.
 
 ## External schema access
 
