@@ -7,6 +7,8 @@
 //! read-modify-write cycle. The generated schema catalog retains every official
 //! declaration and drives cardinality-aware creation, validation and UI labels.
 
+mod datatype;
+
 use quick_xml::XmlVersion;
 use quick_xml::escape::unescape;
 use quick_xml::events::{BytesCData, BytesDecl, BytesPI, BytesRef, BytesStart, BytesText, Event};
@@ -14,10 +16,11 @@ use quick_xml::name::ResolveResult;
 use quick_xml::reader::NsReader;
 use quick_xml::writer::Writer;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::Path;
+use std::sync::OnceLock;
 
 use thiserror::Error;
 use uuid::Uuid;
@@ -42,7 +45,8 @@ pub const SCHEMA_FILES: [&str; 6] = [
 
 const SCHEMA_CATALOG_JSON: &str = include_str!("../catalog/catalog.json");
 
-#[derive(Debug, Error)]
+#[derive(Debug, Clone, PartialEq, Eq, Error)]
+#[non_exhaustive]
 pub enum Error {
     #[error("XML input is {actual} bytes; the configured maximum is {maximum} bytes")]
     InputTooLarge { actual: usize, maximum: usize },
@@ -64,6 +68,49 @@ pub enum Error {
     Json(String),
     #[error("schema cardinality violation: {0}")]
     Cardinality(String),
+    #[error("content model violation: {0}")]
+    Content(String),
+    #[error("I/O error: {0}")]
+    Io(String),
+    #[error("encoding error: {0}")]
+    Encoding(String),
+}
+
+impl Error {
+    /// Stable machine-readable code, suitable for UI branching and JSON output.
+    #[must_use]
+    pub fn code(&self) -> &'static str {
+        match self {
+            Self::InputTooLarge { .. } => "input_too_large",
+            Self::MaxDepthExceeded { .. } => "max_depth_exceeded",
+            Self::Xml(_) => "invalid_xml",
+            Self::Write(_) => "write_failed",
+            Self::Utf8(_) => "invalid_utf8",
+            Self::InvalidPath(_) => "invalid_path",
+            Self::PathNotFound(_) => "path_not_found",
+            Self::Schema(_) => "schema",
+            Self::Json(_) => "invalid_json",
+            Self::Cardinality(_) => "cardinality",
+            Self::Content(_) => "content_model",
+            Self::Io(_) => "io",
+            Self::Encoding(_) => "encoding",
+        }
+    }
+
+    /// `{ "code": ..., "message": ... }` for transport across language boundaries.
+    #[must_use]
+    pub fn to_value(&self) -> Value {
+        serde_json::json!({ "code": self.code(), "message": self.to_string() })
+    }
+}
+
+impl Serialize for Error {
+    fn serialize<S: serde::Serializer>(
+        &self,
+        serializer: S,
+    ) -> std::result::Result<S::Ok, S::Error> {
+        self.to_value().serialize(serializer)
+    }
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -181,6 +228,27 @@ pub struct ValidationIssue {
     pub code: String,
     pub path: String,
     pub message: String,
+    /// Offending attribute (local name) when the issue concerns one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub attribute: Option<String>,
+    /// Machine-readable expectation, e.g. `{"enum": [...]}`, `{"type": "xs:boolean"}`,
+    /// `{"min": 1, "max": null}`, or `{"pattern": "..."}`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expected: Option<Value>,
+}
+
+impl ValidationIssue {
+    #[must_use]
+    pub fn with_attribute(mut self, name: &str) -> Self {
+        self.attribute = Some(name.into());
+        self
+    }
+
+    #[must_use]
+    pub fn with_expected(mut self, expected: Value) -> Self {
+        self.expected = Some(expected);
+        self
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -451,7 +519,28 @@ impl Document {
         Ok(text)
     }
 
+    /// Replace the character data of an element.
+    ///
+    /// Elements whose declaration has element-only content are rejected with
+    /// [`Error::Content`]; undeclared (extension) elements are always
+    /// editable. Use [`Document::set_text_unchecked`] to bypass the check.
     pub fn set_text(&mut self, path: &str, value: &str) -> Result<()> {
+        let catalog = cached_catalog()?;
+        if let Ok(handle) = schema_handle_for_path(self, catalog, path) {
+            if let Some(definition) = catalog.element(&handle) {
+                if is_element_only(definition) {
+                    return Err(Error::Content(format!(
+                        "`{}` has element-only content; it cannot hold character data",
+                        definition.name
+                    )));
+                }
+            }
+        }
+        self.set_text_unchecked(path, value)
+    }
+
+    /// Replace character data without consulting the content model.
+    pub fn set_text_unchecked(&mut self, path: &str, value: &str) -> Result<()> {
         let element = resolve_mut(&mut self.root, &parse_path(path)?)
             .ok_or_else(|| Error::PathNotFound(path.into()))?;
         element.children.retain(|node| {
@@ -546,10 +635,10 @@ impl Document {
     /// Clause 5 says an IDM has one ER. New documents therefore include it and
     /// validation reports its absence as a semantic conformance error.
     pub fn new_idm(full_title: &str, idm_code: &str) -> Result<Self> {
-        let catalog = schema_catalog()?;
+        let catalog = cached_catalog()?;
         let mut document = Self::new();
         let mut ancestors = Vec::new();
-        document.root = build_schema_element(&catalog, "idm", &mut ancestors)?;
+        document.root = build_schema_element(catalog, "idm", &mut ancestors)?;
         document.root.attributes.push(namespace_attribute(
             "xmlns:xsi",
             "http://www.w3.org/2001/XMLSchema-instance",
@@ -563,7 +652,7 @@ impl Document {
         });
         if child_elements(&document.root, "er").next().is_none() {
             let mut er_ancestors = vec!["idm".to_owned()];
-            let er = build_schema_element(&catalog, "er", &mut er_ancestors)?;
+            let er = build_schema_element(catalog, "er", &mut er_ancestors)?;
             insert_schema_ordered(
                 &mut document.root,
                 Node::Element(er),
@@ -576,8 +665,8 @@ impl Document {
     }
 
     pub fn allowed_children(&self, parent_path: &str) -> Result<Vec<ChildAction>> {
-        let catalog = schema_catalog()?;
-        let handle = schema_handle_for_path(self, &catalog, parent_path)?;
+        let catalog = cached_catalog()?;
+        let handle = schema_handle_for_path(self, catalog, parent_path)?;
         let definition = catalog
             .element(&handle)
             .ok_or_else(|| Error::Schema(format!("missing schema definition `{handle}`")))?;
@@ -602,8 +691,8 @@ impl Document {
     }
 
     pub fn append_schema_child(&mut self, parent_path: &str, name: &str) -> Result<String> {
-        let catalog = schema_catalog()?;
-        let parent_handle = schema_handle_for_path(self, &catalog, parent_path)?;
+        let catalog = cached_catalog()?;
+        let parent_handle = schema_handle_for_path(self, catalog, parent_path)?;
         let parent_rule = catalog
             .element(&parent_handle)
             .ok_or_else(|| Error::Schema(format!("missing schema definition `{parent_handle}`")))?;
@@ -620,8 +709,8 @@ impl Document {
                 child_rule.max_occurs.expect("checked")
             )));
         }
-        let mut ancestors = path_schema_ancestors(self, &catalog, parent_path)?;
-        let child = build_schema_element(&catalog, &child_rule.definition, &mut ancestors)?;
+        let mut ancestors = path_schema_ancestors(self, catalog, parent_path)?;
+        let child = build_schema_element(catalog, &child_rule.definition, &mut ancestors)?;
         let parent = self.element_mut(parent_path)?;
         insert_schema_ordered(parent, Node::Element(child), parent_rule);
         Ok(format!("{parent_path}/{name}[{current}]"))
@@ -639,8 +728,8 @@ impl Document {
                 "ISO 29481-3 requires exactly one root exchange requirement".into(),
             ));
         }
-        let catalog = schema_catalog()?;
-        let parent_handle = schema_handle_for_path(self, &catalog, &parent_path)?;
+        let catalog = cached_catalog()?;
+        let parent_handle = schema_handle_for_path(self, catalog, &parent_path)?;
         let parent_rule = catalog
             .element(&parent_handle)
             .ok_or_else(|| Error::Schema(format!("missing schema definition `{parent_handle}`")))?;
@@ -736,7 +825,7 @@ impl Document {
     /// and the explicit standard-over-XSD semantic overlays.
     #[must_use]
     pub fn validate(&self) -> Vec<ValidationIssue> {
-        let Ok(catalog) = schema_catalog() else {
+        let Ok(catalog) = cached_catalog() else {
             return vec![issue(
                 "schema_catalog",
                 "/",
@@ -752,12 +841,45 @@ impl Document {
             ));
             return issues;
         }
-        validate_schema_element(&self.root, "/idm", "idm", &catalog, &mut issues);
+        validate_schema_element(&self.root, "/idm", "idm", catalog, &mut issues);
         let mut guids = BTreeSet::new();
+        let mut ids = BTreeSet::new();
+        let mut author_ids = BTreeSet::new();
         walk_elements(&self.root, "/idm", &mut |element, path| {
             if let Some(guid) = attribute_by_local(element, "guid") {
                 if !guids.insert(guid.to_owned()) {
-                    issues.push(issue("duplicate_guid", path, "guid values must be unique"));
+                    issues.push(
+                        issue("duplicate_guid", path, "guid values must be unique")
+                            .with_attribute("guid"),
+                    );
+                }
+            }
+            if let Some(id) = attribute_by_local(element, "id") {
+                if !ids.insert(id.to_owned()) {
+                    issues.push(
+                        issue("duplicate_id", path, "id values must be unique")
+                            .with_attribute("id"),
+                    );
+                }
+                if element.local_name == "author" {
+                    author_ids.insert(id.to_owned());
+                }
+            }
+        });
+        walk_elements(&self.root, "/idm", &mut |element, path| {
+            if element.local_name == "changeLog" {
+                if let Some(author) = attribute_by_local(element, "changedBy") {
+                    if !author_ids.contains(author) {
+                        issues.push(
+                            warning(
+                                "dangling_reference",
+                                path,
+                                &format!("changedBy `{author}` does not match any author id"),
+                            )
+                            .with_attribute("changedBy")
+                            .with_expected(json!({ "oneOf": author_ids })),
+                        );
+                    }
                 }
             }
         });
@@ -857,12 +979,24 @@ pub fn schema_text(schema_dir: impl AsRef<Path>, name: &str) -> Result<String> {
 /// The catalog contains names, content models, source coordinates and source
 /// hashes, but no XSD bytes.
 pub fn schema_catalog() -> Result<SchemaCatalog> {
-    serde_json::from_str(SCHEMA_CATALOG_JSON).map_err(|error| Error::Schema(error.to_string()))
+    cached_catalog().cloned()
+}
+
+/// Borrow the process-wide parsed catalog. The embedded JSON is deserialized
+/// once, so repeated validation and menu queries do not pay the parse cost.
+pub fn cached_catalog() -> Result<&'static SchemaCatalog> {
+    static CATALOG: OnceLock<std::result::Result<SchemaCatalog, String>> = OnceLock::new();
+    CATALOG
+        .get_or_init(|| {
+            serde_json::from_str(SCHEMA_CATALOG_JSON).map_err(|error| error.to_string())
+        })
+        .as_ref()
+        .map_err(|message| Error::Schema(message.clone()))
 }
 
 /// Inspect a lawfully obtained six-file schema set in `schema_dir`.
 pub fn local_schema_inventory(schema_dir: impl AsRef<Path>) -> Result<SchemaInventory> {
-    let catalog = schema_catalog()?;
+    let catalog = cached_catalog()?;
     let mut complex_types = BTreeSet::new();
     let mut simple_types = BTreeSet::new();
     for name in SCHEMA_FILES {
@@ -880,11 +1014,11 @@ pub fn local_schema_inventory(schema_dir: impl AsRef<Path>) -> Result<SchemaInve
         simple_types.extend(partial.simple_types);
     }
     Ok(SchemaInventory {
-        elements: catalog.element_names,
+        elements: catalog.element_names.clone(),
         complex_types,
         simple_types,
-        attributes: catalog.attribute_names,
-        enum_values: catalog.enum_values,
+        attributes: catalog.attribute_names.clone(),
+        enum_values: catalog.enum_values.clone(),
     })
 }
 
@@ -1209,6 +1343,8 @@ fn issue(code: &str, path: &str, message: &str) -> ValidationIssue {
         code: code.into(),
         path: path.into(),
         message: message.into(),
+        attribute: None,
+        expected: None,
     }
 }
 
@@ -1345,8 +1481,30 @@ fn build_schema_element(
         let nested = build_schema_element(catalog, &child.definition, ancestors)?;
         element.children.push(Node::Element(nested));
     }
+    if definition.name == "authoring" {
+        link_change_logs_to_author(&mut element);
+    }
     ancestors.pop();
     Ok(element)
+}
+
+/// Point generated change logs at the generated author so a new skeleton has
+/// no dangling `changedBy` reference.
+fn link_change_logs_to_author(authoring: &mut Element) {
+    let Some(author_id) = child_elements(authoring, "author")
+        .next()
+        .and_then(|author| attribute_by_local(author, "id"))
+        .map(str::to_owned)
+    else {
+        return;
+    };
+    for node in &mut authoring.children {
+        if let Node::Element(change_log) = node {
+            if change_log.local_name == "changeLog" {
+                change_log.set_attribute("changedBy", &author_id);
+            }
+        }
+    }
 }
 
 fn default_attribute_value(attribute: &AttributeRule) -> String {
@@ -1414,36 +1572,81 @@ fn validate_schema_element(
         return;
     };
     for attribute in &definition.attributes {
-        if attribute.required && attribute_by_local(element, &attribute.name).is_none() {
-            issues.push(issue(
-                "required_attribute",
-                path,
-                &format!("{} requires attribute {}", definition.name, attribute.name),
-            ));
+        let value = attribute_by_local(element, &attribute.name);
+        if attribute.required && value.is_none() {
+            issues.push(
+                issue(
+                    "required_attribute",
+                    path,
+                    &format!("{} requires attribute {}", definition.name, attribute.name),
+                )
+                .with_attribute(&attribute.name),
+            );
         }
-        if attribute.name == "guid" {
-            if let Some(value) = attribute_by_local(element, "guid") {
-                if Uuid::parse_str(value).is_err() || value != value.to_ascii_lowercase() {
-                    issues.push(issue(
-                        "attribute_pattern",
+        let Some(value) = value else { continue };
+        if attribute.name == "guid" && !datatype::is_lowercase_guid(value) {
+            issues.push(
+                issue(
+                    "attribute_pattern",
+                    path,
+                    "guid must match the lowercase UUID pattern declared by specId.xsd",
+                )
+                .with_attribute("guid")
+                .with_expected(json!({ "pattern": attribute.pattern })),
+            );
+        } else if let Some(data_type) = &attribute.data_type {
+            if datatype::lexical_check(data_type, value) == Some(false) {
+                issues.push(
+                    issue(
+                        "attribute_datatype",
                         path,
-                        "guid must match the lowercase UUID pattern declared by specId.xsd",
-                    ));
-                }
+                        &format!(
+                            "`{value}` is not a valid {data_type} for {}",
+                            attribute.name
+                        ),
+                    )
+                    .with_attribute(&attribute.name)
+                    .with_expected(json!({ "type": data_type })),
+                );
             }
         }
-        if !attribute.enum_values.is_empty() {
-            if let Some(value) = attribute_by_local(element, &attribute.name) {
-                if !attribute.enum_values.iter().any(|allowed| allowed == value) {
-                    issues.push(issue(
-                        "attribute_enumeration",
-                        path,
-                        &format!("{} is not an allowed value for {}", value, attribute.name),
-                    ));
-                }
-            }
+        if !attribute.enum_values.is_empty()
+            && !attribute.enum_values.iter().any(|allowed| allowed == value)
+        {
+            issues.push(
+                issue(
+                    "attribute_enumeration",
+                    path,
+                    &format!("{} is not an allowed value for {}", value, attribute.name),
+                )
+                .with_attribute(&attribute.name)
+                .with_expected(json!({ "enum": attribute.enum_values })),
+            );
         }
     }
+    for attribute in &element.attributes {
+        let declared = definition
+            .attributes
+            .iter()
+            .any(|rule| rule.name == attribute.local_name);
+        let extension = attribute.prefix.is_some()
+            || attribute.qualified_name == "xmlns"
+            || attribute.namespace.is_some();
+        if !declared && !extension {
+            issues.push(
+                warning(
+                    "extension_attribute",
+                    path,
+                    &format!(
+                        "Attribute `{}` is not declared on {}; it is preserved as extension content",
+                        attribute.qualified_name, definition.name
+                    ),
+                )
+                .with_attribute(&attribute.local_name),
+            );
+        }
+    }
+    validate_element_text(element, path, definition, issues);
 
     for child_rule in &definition.children {
         let count = child_elements(element, &child_rule.name).count();
@@ -1455,7 +1658,7 @@ fn validate_schema_element(
                     "{} requires at least {} {} child element(s)",
                     definition.name, child_rule.min_occurs, child_rule.name
                 ),
-            ));
+            ).with_expected(json!({ "child": child_rule.name, "min": child_rule.min_occurs, "max": child_rule.max_occurs })));
         }
         if child_rule.max_occurs.is_some_and(|maximum| count > maximum) {
             issues.push(issue(
@@ -1467,7 +1670,7 @@ fn validate_schema_element(
                     child_rule.max_occurs.expect("checked"),
                     child_rule.name
                 ),
-            ));
+            ).with_expected(json!({ "child": child_rule.name, "min": child_rule.min_occurs, "max": child_rule.max_occurs })));
         }
     }
     for group in &definition.choice_groups {
@@ -1523,6 +1726,89 @@ fn validate_schema_element(
     }
 }
 
+/// True when the declaration has child elements and no simple type, so
+/// character data is not part of its content model.
+fn is_element_only(definition: &ElementRule) -> bool {
+    !definition.children.is_empty()
+        && definition.data_type.is_none()
+        && definition.enum_values.is_empty()
+}
+
+fn element_text(element: &Element) -> String {
+    let mut text = String::new();
+    for node in &element.children {
+        match node {
+            Node::Text(value) | Node::CData(value) => text.push_str(value),
+            Node::GeneralReference(reference) => {
+                if let Ok(character) = resolve_general_reference(reference) {
+                    text.push(character);
+                }
+            }
+            _ => {}
+        }
+    }
+    text
+}
+
+fn validate_element_text(
+    element: &Element,
+    path: &str,
+    definition: &ElementRule,
+    issues: &mut Vec<ValidationIssue>,
+) {
+    let text = element_text(element);
+    if is_element_only(definition) {
+        if !text.trim().is_empty() {
+            issues.push(issue(
+                "unexpected_text",
+                path,
+                &format!(
+                    "{} has element-only content; character data is not allowed",
+                    definition.name
+                ),
+            ));
+        }
+        return;
+    }
+    if text.trim().is_empty() {
+        return;
+    }
+    if !definition.enum_values.is_empty()
+        && !definition
+            .enum_values
+            .iter()
+            .any(|allowed| allowed == text.trim())
+    {
+        issues.push(
+            issue(
+                "element_enumeration",
+                path,
+                &format!(
+                    "`{}` is not an allowed value for {}",
+                    text.trim(),
+                    definition.name
+                ),
+            )
+            .with_expected(json!({ "enum": definition.enum_values })),
+        );
+    } else if let Some(data_type) = &definition.data_type {
+        if datatype::lexical_check(data_type, &text) == Some(false) {
+            issues.push(
+                issue(
+                    "element_datatype",
+                    path,
+                    &format!(
+                        "`{}` is not a valid {data_type} for {}",
+                        text.trim(),
+                        definition.name
+                    ),
+                )
+                .with_expected(json!({ "type": data_type })),
+            );
+        }
+    }
+}
+
 fn format_path(segments: &[PathSegment]) -> String {
     let mut path = String::new();
     for segment in segments {
@@ -1541,6 +1827,8 @@ fn warning(code: &str, path: &str, message: &str) -> ValidationIssue {
         code: code.into(),
         path: path.into(),
         message: message.into(),
+        attribute: None,
+        expected: None,
     }
 }
 
