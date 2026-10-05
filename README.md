@@ -81,7 +81,7 @@ assert not [issue for issue in idm.validate() if issue["severity"] == "error"]
 Formal validation never searches the network or silently uses bundled material:
 
 ```python
-issues = idmxml.xsd_validate(idm, schema_dir="references/schema/iso29481-3")
+issues = idmxml.validation.xsd_validate(idm, schema_dir="references/schema/iso29481-3")
 # Or set IDMXML_SCHEMA_DIR, or pass schema_path=".../idm.xsd".
 ```
 

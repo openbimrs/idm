@@ -95,9 +95,8 @@ impl WasmDocument {
 
     #[wasm_bindgen(js_name = fromJson)]
     pub fn from_json(value: &str) -> JsResult<WasmDocument> {
-        let value = serde_json::from_str(value).map_err(json_error)?;
         Ok(Self {
-            inner: Document::from_value(&value).map_err(js_error)?,
+            inner: Document::from_json_str(value).map_err(js_error)?,
         })
     }
 
@@ -289,7 +288,7 @@ impl WasmDocument {
         element_json: &str,
         position: Option<usize>,
     ) -> JsResult<String> {
-        let element: Element = serde_json::from_str(element_json).map_err(json_error)?;
+        let element: Element = crate::json::from_json_str(element_json).map_err(js_error)?;
         self.inner
             .paste_schema_node(parent_path, element, position)
             .map_err(js_error)
@@ -298,14 +297,14 @@ impl WasmDocument {
     /// Apply one edit (JSON); returns the inverse edit as JSON.
     #[wasm_bindgen(js_name = applyJson)]
     pub fn apply_json(&mut self, edit_json: &str) -> JsResult<String> {
-        let edit: Edit = serde_json::from_str(edit_json).map_err(json_error)?;
+        let edit = Edit::from_json_str(edit_json).map_err(js_error)?;
         to_json(&self.inner.apply(&edit).map_err(js_error)?)
     }
 
     /// Apply an edit batch (JSON) atomically; returns the inverse batch as JSON.
     #[wasm_bindgen(js_name = applyBatchJson)]
     pub fn apply_batch_json(&mut self, batch_json: &str) -> JsResult<String> {
-        let batch: EditBatch = serde_json::from_str(batch_json).map_err(json_error)?;
+        let batch = EditBatch::from_json_str(batch_json).map_err(js_error)?;
         to_json(&self.inner.apply_batch(&batch).map_err(js_error)?)
     }
 

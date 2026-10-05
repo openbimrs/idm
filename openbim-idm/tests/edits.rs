@@ -224,3 +224,20 @@ fn diff_produces_edits_that_transform_one_document_into_the_other() {
 
     assert!(a.diff(&a).unwrap().edits.is_empty());
 }
+
+#[test]
+fn move_inverse_accounts_for_shifted_ancestors() {
+    let mut document = base();
+    let original = document.clone();
+    // Move a unit out of informationUnit[0]'s wrapper to the front of /idm/er:
+    // its old parent shifts from informationUnit[0] to informationUnit[1].
+    let inverse = document
+        .apply(&Edit::Move {
+            path: "/idm/er/informationUnit[0]/subInformationUnit[0]/informationUnit[0]".into(),
+            new_parent: "/idm/er".into(),
+            position: Some(0),
+        })
+        .unwrap();
+    document.apply(&inverse).unwrap();
+    assert_eq!(document, original);
+}

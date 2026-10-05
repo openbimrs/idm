@@ -129,9 +129,8 @@ impl PyDocument {
 
     #[staticmethod]
     fn from_json(value: &str) -> PyResult<Self> {
-        let value = serde_json::from_str(value).map_err(json_error)?;
         Ok(Self {
-            inner: Document::from_value(&value).map_err(py_error)?,
+            inner: Document::from_json_str(value).map_err(py_error)?,
         })
     }
 
@@ -306,7 +305,7 @@ impl PyDocument {
         element_json: &str,
         position: Option<usize>,
     ) -> PyResult<String> {
-        let element: Element = serde_json::from_str(element_json).map_err(json_error)?;
+        let element: Element = crate::json::from_json_str(element_json).map_err(py_error)?;
         self.inner
             .paste_schema_node(parent_path, element, position)
             .map_err(py_error)
@@ -328,13 +327,13 @@ impl PyDocument {
 
     /// Apply one edit (JSON); returns the inverse edit as JSON.
     fn apply_json(&mut self, edit_json: &str) -> PyResult<String> {
-        let edit: Edit = serde_json::from_str(edit_json).map_err(json_error)?;
+        let edit = Edit::from_json_str(edit_json).map_err(py_error)?;
         to_json(&self.inner.apply(&edit).map_err(py_error)?)
     }
 
     /// Apply an edit batch (JSON) atomically; returns the inverse batch as JSON.
     fn apply_batch_json(&mut self, batch_json: &str) -> PyResult<String> {
-        let batch: EditBatch = serde_json::from_str(batch_json).map_err(json_error)?;
+        let batch = EditBatch::from_json_str(batch_json).map_err(py_error)?;
         to_json(&self.inner.apply_batch(&batch).map_err(py_error)?)
     }
 

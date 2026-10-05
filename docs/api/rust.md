@@ -33,6 +33,8 @@ Paths use indexed local names such as `/idm/uc[0]/subUc[1]`. Every path-taking m
 
 - `Document::from_path`, `from_reader`, `parse_bytes` detect UTF-8/16 (BOM or declaration), ISO-8859-1 and windows-1252, enforce the size limit before and during reading, and report `ParsedBytes::warnings` about information that serialization changes.
 - `write_path` writes atomically (temporary file in the same directory, then rename), so a failed write leaves the original file intact. `write_to`, `to_bytes` and `to_bytes_with_encoding` cover streams and other encodings; unrepresentable characters are an `Error::Encoding`.
+- `Document::from_json_str`, `Edit::from_json_str` and `EditBatch::from_json_str` read JSON text at any nesting the depth limit allows (plain `serde_json::from_str` stops at about 40 element levels). `DEFAULT_MAX_XML_DEPTH` (256) bounds XML, JSON and edits alike, so no operation can exhaust a 512 KiB stack in release builds.
+- `to_xml` never emits XML that cannot be read back: forbidden characters, `]]>` in CDATA, `--` in comments and invalid names are an `Error::Write`, and the setters reject such characters as `Error::Content`. Text set through the API is stored the way the reader represents it (references as separate nodes), so an edited document equals its reloaded form.
 - `node_info`, `attributes`, `attribute_slots` and `schema_rule` give a property panel everything for one element. `schema_rule` returns `Error::Schema` for undeclared (extension) content.
 
 ## Editing

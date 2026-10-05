@@ -268,3 +268,28 @@ def test_public_surface_is_namespaced() -> None:
     namespace: dict[str, object] = {}
     exec("from idmxml import *", namespace)  # noqa: S102 - checks the star-import surface
     assert {k for k in namespace if not k.startswith("__")} == set(idmxml.__all__)
+
+
+def test_text_with_markup_round_trips_through_dicts_and_files(tmp_path: Path) -> None:
+    document = idmxml.Document.new("Tom & Jerry <draft>", "C")
+    document.set_text("/idm/uc/standardProjectPhase/name", "a & b < c\r\n")
+    assert idmxml.Document.from_dict(document.to_dict()) == document
+    path = tmp_path / "doc.xml"
+    idmxml.fileio.dump(document, path, pretty=False)
+    assert idmxml.fileio.load(path) == document
+    assert [p.name for p in tmp_path.iterdir()] == ["doc.xml"]
+    with pytest.raises(idmxml.errors.EncodingError):
+        idmxml.fileio.dump(idmxml.Document.new("\u20ac", "C"), path, encoding="iso-8859-1")
+    assert idmxml.fileio.load(path) == document
+    with pytest.raises(idmxml.errors.ContentModelError):
+        document.set_attribute("/idm/specId", "fullTitle", "bad\x01")
+
+
+def test_deep_documents_round_trip_through_dicts() -> None:
+    xml = "<idm>" + "<x>" * 200 + "</x>" * 200 + "</idm>"
+    document = idmxml.Document.parse(xml)
+    assert idmxml.Document.from_dict(document.to_dict()) == document
+    too_deep = "<idm>" + "<x>" * 300 + "</x>" * 300 + "</idm>"
+    with pytest.raises(idmxml.errors.XmlError) as error:
+        idmxml.Document.parse(too_deep)
+    assert error.value.code == "max_depth_exceeded"

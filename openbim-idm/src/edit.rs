@@ -88,8 +88,11 @@ impl Document {
             }
             Edit::SetChildren { path, children } => {
                 let path = self.path_of(path)?;
+                let mut replacement = Element::new("canonical", None);
+                replacement.children = children.clone();
+                normalize_empty_text(&mut replacement);
                 let element = self.element_mut(&path)?;
-                let prior = std::mem::replace(&mut element.children, children.clone());
+                let prior = std::mem::replace(&mut element.children, replacement.children);
                 Ok(Edit::SetChildren {
                     path,
                     children: prior,
@@ -197,6 +200,9 @@ impl Document {
                 let path = self.path_of(path)?;
                 let (old_parent, segment) = split_parent(&path)?;
                 let new_path = self.reparent_schema_node(&path, new_parent, *position)?;
+                // Inserting at the destination shifts later same-name siblings
+                // there; the old parent may be one of them (or below one).
+                let old_parent = adjust_path_after_insertion(&old_parent, &new_path)?;
                 Ok(Edit::Move {
                     path: new_path,
                     new_parent: old_parent,
@@ -273,6 +279,27 @@ impl Document {
             .count();
         canonical_path(&format!("{parent_path}/{}[{index}]", segment.name))
     }
+}
+
+/// Re-express `path` after an element was inserted at `inserted` (a canonical
+/// path): same-name siblings at or after the insertion index shift up by one.
+fn adjust_path_after_insertion(path: &str, inserted: &str) -> Result<String> {
+    let mut segments = parse_path(path)?;
+    let inserted = parse_path(inserted)?;
+    let depth = inserted.len() - 1;
+    let shares_parent = segments.len() > depth
+        && segments[..depth]
+            .iter()
+            .zip(&inserted[..depth])
+            .all(|(a, b)| a.name == b.name && a.index == b.index);
+    if shares_parent {
+        let segment = &mut segments[depth];
+        let target = &inserted[depth];
+        if segment.name == target.name && segment.index >= target.index {
+            segment.index += 1;
+        }
+    }
+    canonical_path(&format_path(&segments))
 }
 
 fn split_parent(path: &str) -> Result<(String, PathSegment)> {
