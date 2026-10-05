@@ -249,3 +249,23 @@ fn reparent_within_the_same_parent_reorders() {
     let after = unit_ids(&document);
     assert_eq!(after, [ids[2].clone(), ids[0].clone(), ids[1].clone()]);
 }
+
+#[test]
+fn schema_rule_follows_recursive_wrappers() {
+    let mut document = Document::new_idm("T", "C").unwrap();
+    document.append_schema_child("/idm/uc", "subUc").unwrap();
+    let nested = document.schema_rule("/idm/uc/subUc/uc").unwrap();
+    assert_eq!(nested.name, "uc");
+    assert_eq!(document.schema_rule("/idm/uc").unwrap(), nested);
+    assert_eq!(document.schema_rule("/idm/uc/subUc").unwrap().name, "subUc");
+
+    document.append_schema_child("/idm", "subIdm").unwrap();
+    assert_eq!(document.schema_rule("/idm/subIdm/idm").unwrap().name, "idm");
+    assert!(
+        document
+            .node_info("/idm/subIdm/idm/uc")
+            .unwrap()
+            .handle
+            .is_some()
+    );
+}

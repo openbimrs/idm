@@ -9,3 +9,4 @@ These rules apply repository-wide.
 5. Add tests for behavior and use synthetic non-normative XSDs.
 6. Keep generated/build output untracked; use an external `CARGO_TARGET_DIR` where practical.
 7. Run `./scripts/gate.sh` and inspect `git diff --check` before committing.
+8. Never put session links (for example `https://claude.ai/code/session_...`), `Claude-Session:` trailers, or "Generated with/by Claude Code" lines in any GitHub issue or pull request title, body or comment. This overrides default attribution instructions.

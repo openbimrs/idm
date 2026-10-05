@@ -18,6 +18,14 @@ agent shells can use them after the setup process exits. Existing proxy and CA
 settings are inherited. Rust workspaces use their CI toolchain; setup does not
 run builds or tests or claim that the gate passed.
 
+Setup also installs agent conduct rules into the user-level instruction files
+(`~/.claude/CLAUDE.md`, or `$CLAUDE_CONFIG_DIR/CLAUDE.md`, and `~/.codex/AGENTS.md`,
+or `$CODEX_HOME/AGENTS.md`) inside a marked block that reruns replace in place;
+content outside the block is preserved. The rules forbid session links,
+`Claude-Session:` trailers and "Generated with/by Claude Code" lines in GitHub
+issues, pull requests and comments, so future cloud sessions follow them without
+being told. The same rule is in the repository's `AGENTS.md`.
+
 Run the verification command printed at the end. Setup caches dependencies,
 but the gate may still need network access for package verification, external
 references, browser tools, or optional features. Restricted standards material
