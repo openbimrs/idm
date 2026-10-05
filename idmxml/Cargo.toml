@@ -1,6 +1,6 @@
 [package]
 name = "idmxml"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 rust-version = "1.85"
 license = "AGPL-3.0-or-later"
@@ -13,7 +13,7 @@ categories = ["parser-implementations", "data-structures"]
 include = ["src/lib.rs", "Cargo.toml", "README.md", "LICENSE", "LICENSES/MIT.txt"]
 
 [dependencies]
-openbim-idm = { path = "../openbim-idm", version = "=0.2.0", default-features = false }
+openbim-idm = { path = "../openbim-idm", version = "=0.3.0", default-features = false }
 
 [lints.rust]
 unsafe_code = "forbid"

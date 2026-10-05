@@ -4,6 +4,8 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-05
+
 ### Added
 
 - Validation of XSD built-in lexical types, element enumerations, element-only content, unknown attributes (warning), duplicate `id` values and `changedBy` references; `ValidationIssue` gains optional `attribute` and `expected` fields.
@@ -76,6 +78,7 @@ former `openbimrs/openbim` monorepo.
 Name reservation published from the former `openbimrs/openbim` monorepo under
 MIT: a `DocumentKind` placeholder enum and no parser. Superseded by `0.2.0`.
 
-[Unreleased]: https://github.com/openbimrs/idm/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/openbimrs/idm/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/openbimrs/idm/releases/tag/v0.3.0
 [0.2.0]: https://github.com/openbimrs/idm/releases/tag/v0.2.0
 [0.1.0]: https://crates.io/crates/openbim-idm/0.1.0
