@@ -8,10 +8,18 @@
 //! declaration and drives cardinality-aware creation, validation and UI labels.
 
 mod datatype;
+mod edit;
+mod io;
 mod node;
 mod ops;
+mod verify;
 
+pub use edit::{EDIT_FORMAT_VERSION, Edit, EditBatch};
+pub use io::{Encoding, ParsedBytes};
 pub use node::{AttributeInfo, AttributeSlot, ChildInfo, NodeInfo};
+pub use verify::{
+    SchemaFileCheck, SchemaFileStatus, SchemaVerification, verify_schema_dir, verify_schema_files,
+};
 
 use quick_xml::XmlVersion;
 use quick_xml::escape::unescape;

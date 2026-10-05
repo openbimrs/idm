@@ -70,7 +70,7 @@ impl Document {
     /// target must declare the same definition for the child, the source must
     /// stay above its minimum cardinality, and the target must be below its
     /// maximum. The document is unchanged if any check fails. `position` is the
-    /// index among same-name siblings at the destination; `None` appends.
+    /// final index among same-name siblings at the destination; `None` appends.
     pub fn reparent_schema_node(
         &mut self,
         path: &str,
@@ -120,6 +120,8 @@ impl Document {
         Ok(new_path)
     }
 
+    /// Move within the parent so the element ends at `position` (its final
+    /// index among same-name siblings); `None` moves it to the end.
     fn reorder_within_parent(
         &mut self,
         path: &str,
@@ -129,18 +131,18 @@ impl Document {
         let parent_path = path.rsplit_once('/').map_or("", |(parent, _)| parent);
         let parent = self.element(parent_path)?;
         let count = child_elements(parent, &source.name).count();
-        let (target_index, after) = match position {
-            Some(index) if index < count => (index, false),
-            Some(index) if index == count => (count - 1, true),
-            Some(index) => {
-                return Err(Error::InvalidPath(format!(
-                    "position {index} is beyond the {count} existing `{}` sibling(s)",
-                    source.name
-                )));
-            }
-            None => (count - 1, true),
-        };
-        let target = format!("{parent_path}/{}[{target_index}]", source.name);
+        let final_index = position.unwrap_or(count - 1);
+        if final_index >= count {
+            return Err(Error::InvalidPath(format!(
+                "position {final_index} is beyond the {count} existing `{}` sibling(s)",
+                source.name
+            )));
+        }
+        if final_index == source.index {
+            return canonical_path(path);
+        }
+        let target = format!("{parent_path}/{}[{final_index}]", source.name);
+        let after = final_index > source.index;
         canonical_path(&self.move_schema_node(path, &target, after)?)
     }
 
