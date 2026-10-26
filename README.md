@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/openbimrs/idm/actions/workflows/ci.yml/badge.svg)](https://github.com/openbimrs/idm/actions/workflows/ci.yml)
 [![Docs](https://github.com/openbimrs/idm/actions/workflows/pages.yml/badge.svg)](https://openbimrs.github.io/idm/)
-[![MSRV 1.85](https://img.shields.io/badge/MSRV-1.85-blue)](https://github.com/openbimrs/idm/blob/main/rust-toolchain.toml)
+[![MSRV 1.99](https://img.shields.io/badge/MSRV-1.99-blue)](https://github.com/openbimrs/idm/blob/main/rust-toolchain.toml)
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue.svg)](LICENSE)
 
 Lossless, recursive ISO 29481-3 idmXML tooling in Rust, with Rust and Python CLIs and a thin PyO3 Python facade.

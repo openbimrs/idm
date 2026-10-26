@@ -48,7 +48,7 @@ export PATH="/usr/local/bin:${CARGO_HOME:-$HOME/.cargo}/bin:$HOME/.local/bin:$PA
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
-toolchain="1.85.0" # Matches the repository's CI/MSRV.
+toolchain="1.99.1" # Matches the repository's CI/MSRV.
 if ! command -v rustup >/dev/null; then
   curl --fail --location --silent --show-error --retry 3 \
     https://sh.rustup.rs --output "$work/rustup-init.sh"

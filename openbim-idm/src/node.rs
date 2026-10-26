@@ -178,16 +178,15 @@ impl Document {
     /// [`Error::Content`]; extension attributes can always be removed.
     pub fn remove_attribute(&mut self, path: &str, name: &str) -> Result<()> {
         let path = self.resolve_locator(path)?.into_owned();
-        if let Ok(rule) = self.schema_rule(&path) {
-            if rule
+        if let Ok(rule) = self.schema_rule(&path)
+            && rule
                 .attribute(name)
                 .is_some_and(|attribute| attribute.required)
-            {
-                return Err(Error::Content(format!(
-                    "attribute `{name}` is required on `{}`",
-                    rule.name
-                )));
-            }
+        {
+            return Err(Error::Content(format!(
+                "attribute `{name}` is required on `{}`",
+                rule.name
+            )));
         }
         self.remove_attribute_unchecked(&path, name)
     }

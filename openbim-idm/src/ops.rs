@@ -242,13 +242,11 @@ fn regenerate_in(
                     guids.insert(attribute.value.clone());
                 }
             }
-            "id" => {
-                if !ids.insert(attribute.value.clone()) {
-                    let fresh = format!("id-{}", Uuid::new_v4().simple());
-                    remap.insert(attribute.value.clone(), fresh.clone());
-                    attribute.value = fresh;
-                    ids.insert(attribute.value.clone());
-                }
+            "id" if !ids.insert(attribute.value.clone()) => {
+                let fresh = format!("id-{}", Uuid::new_v4().simple());
+                remap.insert(attribute.value.clone(), fresh.clone());
+                attribute.value = fresh;
+                ids.insert(attribute.value.clone());
             }
             _ => {}
         }
@@ -265,10 +263,10 @@ fn remap_references(element: &mut Element, remap: &BTreeMap<String, String>) {
         return;
     }
     for attribute in &mut element.attributes {
-        if attribute.local_name == "changedBy" {
-            if let Some(fresh) = remap.get(&attribute.value) {
-                attribute.value = fresh.clone();
-            }
+        if attribute.local_name == "changedBy"
+            && let Some(fresh) = remap.get(&attribute.value)
+        {
+            attribute.value = fresh.clone();
         }
     }
     for child in &mut element.children {

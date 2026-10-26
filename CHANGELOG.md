@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Changed
+
+- Raise MSRV to Rust 1.99.
+
 ## [0.3.0] - 2026-10-05
 
 ### Added

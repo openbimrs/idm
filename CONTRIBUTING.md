@@ -4,7 +4,7 @@ Thank you for improving `openbimrs/idm`.
 
 ## Setup
 
-Install Rust 1.85.0 (the pinned MSRV), Python 3.9+, `uv`, Node 22+, and npm. Build caches should live outside the repository when practical:
+Install Rust 1.99.1 (the pinned toolchain and MSRV 1.99), Python 3.9+, `uv`, Node 22+, and npm. Build caches should live outside the repository when practical:
 
 ```bash
 export CARGO_TARGET_DIR=/mnt/backup/build-cache/openbim-idm-target

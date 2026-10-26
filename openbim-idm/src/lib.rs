@@ -556,15 +556,14 @@ impl Document {
     pub fn set_text(&mut self, path: &str, value: &str) -> Result<()> {
         let path: &str = &self.resolve_locator(path)?;
         let catalog = cached_catalog()?;
-        if let Ok(handle) = schema_handle_for_path(self, catalog, path) {
-            if let Some(definition) = catalog.element(&handle) {
-                if is_element_only(definition) {
-                    return Err(Error::Content(format!(
-                        "`{}` has element-only content; it cannot hold character data",
-                        definition.name
-                    )));
-                }
-            }
+        if let Ok(handle) = schema_handle_for_path(self, catalog, path)
+            && let Some(definition) = catalog.element(&handle)
+            && is_element_only(definition)
+        {
+            return Err(Error::Content(format!(
+                "`{}` has element-only content; it cannot hold character data",
+                definition.name
+            )));
         }
         self.set_text_unchecked(path, value)
     }
@@ -892,13 +891,13 @@ impl Document {
         let mut ids = BTreeSet::new();
         let mut author_ids = BTreeSet::new();
         walk_elements(&self.root, &self.root_path(), &mut |element, path| {
-            if let Some(guid) = attribute_by_local(element, "guid") {
-                if !guids.insert(guid.to_owned()) {
-                    issues.push(
-                        issue("duplicate_guid", path, "guid values must be unique")
-                            .with_attribute("guid"),
-                    );
-                }
+            if let Some(guid) = attribute_by_local(element, "guid")
+                && !guids.insert(guid.to_owned())
+            {
+                issues.push(
+                    issue("duplicate_guid", path, "guid values must be unique")
+                        .with_attribute("guid"),
+                );
             }
             if let Some(id) = attribute_by_local(element, "id") {
                 if !ids.insert(id.to_owned()) {
@@ -913,20 +912,19 @@ impl Document {
             }
         });
         walk_elements(&self.root, &self.root_path(), &mut |element, path| {
-            if element.local_name == "changeLog" {
-                if let Some(author) = attribute_by_local(element, "changedBy") {
-                    if !author_ids.contains(author) {
-                        issues.push(
-                            warning(
-                                "dangling_reference",
-                                path,
-                                &format!("changedBy `{author}` does not match any author id"),
-                            )
-                            .with_attribute("changedBy")
-                            .with_expected(json!({ "oneOf": author_ids })),
-                        );
-                    }
-                }
+            if element.local_name == "changeLog"
+                && let Some(author) = attribute_by_local(element, "changedBy")
+                && !author_ids.contains(author)
+            {
+                issues.push(
+                    warning(
+                        "dangling_reference",
+                        path,
+                        &format!("changedBy `{author}` does not match any author id"),
+                    )
+                    .with_attribute("changedBy")
+                    .with_expected(json!({ "oneOf": author_ids })),
+                );
             }
         });
         for overlay in &catalog.semantic_overlays {
@@ -1455,10 +1453,10 @@ fn collect_schema(element: &Element, inventory: &mut SchemaInventory) {
             _ => {}
         }
     }
-    if element.local_name == "enumeration" {
-        if let Some(value) = attribute_by_local(element, "value") {
-            inventory.enum_values.insert(value.into());
-        }
+    if element.local_name == "enumeration"
+        && let Some(value) = attribute_by_local(element, "value")
+    {
+        inventory.enum_values.insert(value.into());
     }
     for child in &element.children {
         if let Node::Element(child) = child {
@@ -1640,10 +1638,10 @@ fn link_change_logs_to_author(authoring: &mut Element) {
         return;
     };
     for node in &mut authoring.children {
-        if let Node::Element(change_log) = node {
-            if change_log.local_name == "changeLog" {
-                change_log.set_attribute("changedBy", &author_id);
-            }
+        if let Node::Element(change_log) = node
+            && change_log.local_name == "changeLog"
+        {
+            change_log.set_attribute("changedBy", &author_id);
         }
     }
 }
@@ -1735,21 +1733,21 @@ fn validate_schema_element(
                 .with_attribute("guid")
                 .with_expected(json!({ "pattern": attribute.pattern })),
             );
-        } else if let Some(data_type) = &attribute.data_type {
-            if datatype::lexical_check(data_type, value) == Some(false) {
-                issues.push(
-                    issue(
-                        "attribute_datatype",
-                        path,
-                        &format!(
-                            "`{value}` is not a valid {data_type} for {}",
-                            attribute.name
-                        ),
-                    )
-                    .with_attribute(&attribute.name)
-                    .with_expected(json!({ "type": data_type })),
-                );
-            }
+        } else if let Some(data_type) = &attribute.data_type
+            && datatype::lexical_check(data_type, value) == Some(false)
+        {
+            issues.push(
+                issue(
+                    "attribute_datatype",
+                    path,
+                    &format!(
+                        "`{value}` is not a valid {data_type} for {}",
+                        attribute.name
+                    ),
+                )
+                .with_attribute(&attribute.name)
+                .with_expected(json!({ "type": data_type })),
+            );
         }
         if !attribute.enum_values.is_empty()
             && !attribute.enum_values.iter().any(|allowed| allowed == value)
@@ -1932,21 +1930,21 @@ fn validate_element_text(
             )
             .with_expected(json!({ "enum": definition.enum_values })),
         );
-    } else if let Some(data_type) = &definition.data_type {
-        if datatype::lexical_check(data_type, &text) == Some(false) {
-            issues.push(
-                issue(
-                    "element_datatype",
-                    path,
-                    &format!(
-                        "`{}` is not a valid {data_type} for {}",
-                        text.trim(),
-                        definition.name
-                    ),
-                )
-                .with_expected(json!({ "type": data_type })),
-            );
-        }
+    } else if let Some(data_type) = &definition.data_type
+        && datatype::lexical_check(data_type, &text) == Some(false)
+    {
+        issues.push(
+            issue(
+                "element_datatype",
+                path,
+                &format!(
+                    "`{}` is not a valid {data_type} for {}",
+                    text.trim(),
+                    definition.name
+                ),
+            )
+            .with_expected(json!({ "type": data_type })),
+        );
     }
 }
 

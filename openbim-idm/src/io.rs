@@ -245,10 +245,10 @@ fn decode(encoding: Encoding, bytes: &[u8]) -> Result<String> {
         Encoding::Utf8 => String::from_utf8(bytes.to_vec())
             .map_err(|error| Error::Encoding(format!("input is not valid UTF-8: {error}"))),
         Encoding::Utf16Le | Encoding::Utf16Be => {
-            if bytes.len() % 2 != 0 {
+            if !bytes.len().is_multiple_of(2) {
                 return Err(Error::Encoding("UTF-16 input has an odd byte count".into()));
             }
-            let units = bytes.chunks_exact(2).map(|pair| {
+            let units = bytes.as_chunks::<2>().0.iter().map(|pair| {
                 if encoding == Encoding::Utf16Le {
                     u16::from_le_bytes([pair[0], pair[1]])
                 } else {
