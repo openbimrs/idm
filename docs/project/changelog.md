@@ -1,6 +1,10 @@
 # Changelog
 
-The project follows Keep a Changelog. The first release from this repository is `0.2.0`.
+The project follows Keep a Changelog. The first release from this repository is `0.2.0` (unpublished); `0.3.1` is the first crates.io release since the `0.1.0` placeholder.
+
+## 0.3.1 - 2026-10-28
+
+- Dual-licensed under `AGPL-3.0-or-later OR LicenseRef-Commercial`; both crates now ship `LICENSE`, `NOTICE` and the commercial licence text. Raised the MSRV to Rust 1.99.
 
 ## 0.3.0 - 2026-10-05
 

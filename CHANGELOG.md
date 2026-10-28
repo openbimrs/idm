@@ -4,8 +4,17 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-28
+
+This is the first crates.io release since 0.1.0 (MIT) and includes everything
+in 0.2.0 and 0.3.0.
+
 ### Changed
 
+- Licence: `AGPL-3.0-or-later OR LicenseRef-Commercial` (was `MIT` in the last
+  published release); a commercial licence is available from the copyright
+  holder named in `NOTICE`. See LICENSING.md. Both crates ship `LICENSE`,
+  `NOTICE` and `LICENSES/LicenseRef-Commercial.txt`.
 - Raise MSRV to Rust 1.99.
 
 ## [0.3.0] - 2026-10-05
@@ -82,7 +91,8 @@ former `openbimrs/openbim` monorepo.
 Name reservation published from the former `openbimrs/openbim` monorepo under
 MIT: a `DocumentKind` placeholder enum and no parser. Superseded by `0.2.0`.
 
-[Unreleased]: https://github.com/openbimrs/idm/compare/v0.3.0...HEAD
-[0.3.0]: https://github.com/openbimrs/idm/releases/tag/v0.3.0
+[Unreleased]: https://github.com/openbimrs/idm/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/openbimrs/idm/releases/tag/v0.3.1
+[0.3.0]: https://github.com/openbimrs/idm/blob/main/CHANGELOG.md#030---2026-10-05
 [0.2.0]: https://github.com/openbimrs/idm/releases/tag/v0.2.0
 [0.1.0]: https://crates.io/crates/openbim-idm/0.1.0

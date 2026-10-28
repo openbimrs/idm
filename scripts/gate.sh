@@ -38,6 +38,9 @@ step cargo package -p idmxml --allow-dirty --no-verify \
 step python3 scripts/check-leakage.py \
   "$CARGO_TARGET_DIR/package/openbim-idm-$VERSION.crate" \
   "$CARGO_TARGET_DIR/package/idmxml-$VERSION.crate"
+step python3 scripts/check-package-licences.py \
+  "$CARGO_TARGET_DIR/package/openbim-idm-$VERSION.crate" \
+  "$CARGO_TARGET_DIR/package/idmxml-$VERSION.crate"
 
 if command -v uv >/dev/null 2>&1; then
   step uv sync --extra test
