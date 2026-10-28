@@ -37,7 +37,7 @@ The six Annex B XSD files and all DIN/ISO PDFs are deliberately absent. Put lawf
 
 ```toml
 [dependencies]
-openbim-idm = "0.2"
+openbim-idm = "0.3"
 ```
 
 ```rust

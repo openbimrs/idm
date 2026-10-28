@@ -10,7 +10,7 @@
 | Python package | `idmxml` | Thin Python ergonomics over `idmxml._native` |
 | Python CLI | `idmpy` | Python command facade |
 
-The Rust crates are on crates.io (`openbim-idm = "0.2"`, or the alias `idmxml`). The Python package is not yet on PyPI; for Python, clone the repository and build with `maturin`.
+The Rust crates are on crates.io (`openbim-idm = "0.3"`, or the alias `idmxml`). The Python package is not yet on PyPI; for Python, clone the repository and build with `maturin`.
 
 ## Rust
 

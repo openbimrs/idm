@@ -4,13 +4,14 @@
 
 | Channel | Package | State |
 |---|---|---|
-| crates.io | [`openbim-idm`](https://crates.io/crates/openbim-idm) (canonical) | Published from this repository, starting with `0.2.0` |
-| crates.io | [`idmxml`](https://crates.io/crates/idmxml) (alias) | Published from this repository, starting with `0.2.0` |
+| crates.io | [`openbim-idm`](https://crates.io/crates/openbim-idm) (canonical) | Published from this repository, starting with `0.3.1` |
+| crates.io | [`idmxml`](https://crates.io/crates/idmxml) (alias) | Published from this repository, starting with `0.3.1` |
 | PyPI | `idmxml` (Python facade, `idmpy` CLI) | **Not yet published.** Build locally with `maturin` |
 | npm | — | Nothing is published; `package.json` only builds the documentation site |
 
 `0.1.0` of both crates was a name-reservation placeholder published under MIT
-from the former `openbimrs/openbim` monorepo. `0.2.0` is the first release from
+from the former `openbimrs/openbim` monorepo. `0.2.0` and `0.3.0` have changelog
+sections but were never published; `0.3.1` is the first crates.io release from
 this repository.
 
 The repository owner lifted the former publication guards (`publish = false` in
