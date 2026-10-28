@@ -1,14 +1,15 @@
 [build-system]
-requires = ["maturin>=1.7,<2"]
+requires = ["maturin>=1.9.6,<2"]
 build-backend = "maturin"
 
 [project]
 name = "idmxml"
-version = "0.3.0"
+version = "0.3.1"
 description = "Lossless ISO 29481-3 idmXML reader, writer and schema-aware editor"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "AGPL-3.0-or-later"
+license = "AGPL-3.0-or-later OR LicenseRef-Commercial"
+license-files = ["LICENSE", "NOTICE", "LICENSES/*"]
 authors = [{ name = "openbimrs contributors" }]
 keywords = ["BIM", "IDM", "ISO-29481", "XML"]
 classifiers = [
@@ -20,7 +21,7 @@ classifiers = [
 
 [project.optional-dependencies]
 xsd = ["lxml>=5"]
-test = ["pytest>=8", "lxml>=5", "maturin>=1.7,<2", "mypy>=1.10", "ruff>=0.12"]
+test = ["pytest>=8", "lxml>=5", "maturin>=1.9.6,<2", "mypy>=1.10", "ruff>=0.12"]
 
 [project.scripts]
 idmpy = "idmxml.cli:entrypoint"

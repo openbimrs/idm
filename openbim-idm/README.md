@@ -6,11 +6,11 @@ The six ISO 29481-3 Annex B XSD files are not redistributed in this crate. The e
 
 ```toml
 [dependencies]
-openbim-idm = "0.2"
+openbim-idm = "0.3"
 ```
 
 The `idmxml` binary is behind the default `cli` feature; use `default-features = false` for the library alone.
 
-Licensed under `AGPL-3.0-or-later`. Version `0.1.0` was an unrelated MIT-licensed name-reservation placeholder.
+Dual-licensed `AGPL-3.0-or-later OR LicenseRef-Commercial`; see LICENSING.md in the repository. Version `0.1.0` was an unrelated MIT-licensed name-reservation placeholder.
 
 See the [repository README](https://github.com/openbimrs/idm#readme) and [documentation](https://openbimrs.github.io/idm/).

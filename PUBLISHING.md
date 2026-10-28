@@ -23,11 +23,12 @@ generated metadata, never the ISO schemas themselves.
 
 - `openbim-idm` crate: Rust sources (library, `idmxml` CLI, optional PyO3
   module), integration tests with one synthetic non-normative fixture, the
-  generated `catalog/catalog.json`, `README.md`, `LICENSE`, and
-  `LICENSES/MIT.txt`. The file list is fixed by `include` in
+  generated `catalog/catalog.json`, `README.md`, `LICENSE`, `NOTICE`,
+  `LICENSES/MIT.txt`, and `LICENSES/LicenseRef-Commercial.txt`. The file list is fixed by `include` in
   `openbim-idm/Cargo.toml`.
 - `idmxml` crate: exactly `src/lib.rs` (`pub use openbim_idm::*;`),
-  `README.md`, `LICENSE`, and `LICENSES/MIT.txt`, depending on
+  `README.md`, `LICENSE`, `NOTICE`, `LICENSES/MIT.txt`, and
+  `LICENSES/LicenseRef-Commercial.txt`, depending on
   `openbim-idm = "=<same version>"`.
 
 `catalog.json` holds declaration names, content models, source coordinates, and
